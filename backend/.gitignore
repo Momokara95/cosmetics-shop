@@ -1,0 +1,60 @@
+# ---- ENV FILES ----
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+
+# ---- NODE ----
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ---- BUILD ----
+dist/
+build/
+.cache/
+.temp/
+
+# ---- REACT ----
+/frontend/node_modules/
+/frontend/build/
+/frontend/.eslintcache
+
+# ---- LOGS ----
+logs
+*.log
+*.log.*
+log.txt
+
+# ---- SYSTEM FILES ----
+.DS_Store
+Thumbs.db
+
+# ---- EDITORS ----
+.vscode/
+.idea/
+*.swp
+
+# ---- MONGODB ----
+/data/db
+mongodb.log
+
+# ---- COVERAGE ----
+coverage/
+*.lcov
+
+# ---- MISC ----
+*.pid
+*.seed
+*.pid.lock
+
+# ---- TEST ----
+jest-cache/
+jest-temp/
+
+# ---- OPTIONAL ----
+# ignore uploads if you store images locally
+/uploads/

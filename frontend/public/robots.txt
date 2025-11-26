@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Sitemap: https://ton-site.com/sitemap.xml
+
+# Bloquer les pages admin
+Disallow: /admin/
+Disallow: /cart/
+Disallow: /checkout/
