@@ -24,7 +24,7 @@ app.use(helmet());
 const allowedOrigins = [
   'http://localhost:3000',
   'http://127.0.0.1:3000',
-  'https://cosmetics-shop-nine.vercel.app/', // 🔥 FRONT VERCEL
+  'https://cosmetics-shop-nine.vercel.app', // 🔥 FRONT VERCEL
 ];
 
 app.use(
