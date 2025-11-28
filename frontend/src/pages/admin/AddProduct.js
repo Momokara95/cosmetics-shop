@@ -82,7 +82,7 @@ const AddProduct = () => {
       };
 
       const { data } = await axios.post(
-        'https://beaute-shop-production.up.railway.app/api/products',
+        'https://cosmetics-shop-production.up.railway.app/api/products',
         productData,
         {
           headers: {
