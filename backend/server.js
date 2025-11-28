@@ -13,34 +13,35 @@ const orderRoutes = require('./routes/orderRoutes');
 
 const app = express();
 
-// -------------------- SÉCURITÉ --------------------
+// ---------------------------------------------------
+// SÉCURITÉ
+// ---------------------------------------------------
 app.use(helmet());
 
-// -------------------- CORS --------------------
+// ---------------------------------------------------
+// CORS
+// ---------------------------------------------------
 const allowedOrigins = [
   'http://localhost:3000',
   'http://127.0.0.1:3000',
+  'https://beaute-shop-seven.vercel.app', // 🔥 FRONT VERCEL
 ];
 
 app.use(
   cors({
     origin: function (origin, callback) {
-      if (
-        !origin ||
-        allowedOrigins.includes(origin) ||
-        origin?.startsWith('http://192.168.') ||
-        origin?.startsWith('http://10.')
-      ) {
-        callback(null, true);
-      } else {
-        callback(null, true); // dev mode: allow all
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
       }
+      return callback(null, false);
     },
     credentials: true,
   })
 );
 
-// -------------------- RATE LIMIT --------------------
+// ---------------------------------------------------
+// RATE LIMIT
+// ---------------------------------------------------
 app.use(
   '/api',
   rateLimit({
@@ -50,14 +51,20 @@ app.use(
   })
 );
 
-// -------------------- BODY PARSER --------------------
+// ---------------------------------------------------
+// BODY PARSER
+// ---------------------------------------------------
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// -------------------- FICHIERS STATIQUES --------------------
+// ---------------------------------------------------
+// FICHIERS STATIQUES
+// ---------------------------------------------------
 app.use('/uploads', express.static('uploads'));
 
-// -------------------- ROUTES --------------------
+// ---------------------------------------------------
+// ROUTES API
+// ---------------------------------------------------
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
@@ -69,10 +76,14 @@ app.get('/api', (req, res) => {
   });
 });
 
-// -------------------- HANDLER D’ERREURS --------------------
+// ---------------------------------------------------
+// HANDLER GLOBAL
+// ---------------------------------------------------
 app.use(errorHandler);
 
-// -------------------- MONGODB --------------------
+// ---------------------------------------------------
+// CONNECTION MONGODB
+// ---------------------------------------------------
 const connectDB = async () => {
   try {
     await mongoose.connect(process.env.MONGODB_URI);
@@ -83,7 +94,9 @@ const connectDB = async () => {
   }
 };
 
-// -------------------- SERVEUR --------------------
+// ---------------------------------------------------
+// SERVEUR
+// ---------------------------------------------------
 const PORT = process.env.PORT || 5000;
 
 connectDB().then(() => {
@@ -96,7 +109,9 @@ connectDB().then(() => {
   });
 });
 
-// -------------------- ERREURS NON GÉRÉES --------------------
+// ---------------------------------------------------
+// ERREURS NON GÉRÉES
+// ---------------------------------------------------
 process.on('unhandledRejection', (err) => {
   console.error('❌ Erreur non gérée:', err.message);
   process.exit(1);

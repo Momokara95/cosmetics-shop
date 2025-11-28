@@ -9,7 +9,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const API_URL = 'http://localhost:5000/api';
+  const API_URL = 'https://beaute-shop-production.up.railway.app/api';
 
   // Vérifie si un utilisateur est connecté au chargement
   useEffect(() => {

@@ -17,7 +17,7 @@ const Products = () => {
     const fetchProducts = async () => {
       setLoading(true);
       try {
-        let url = 'http://localhost:5000/api/products?';
+        let url = 'https://beaute-shop-production.up.railway.app/api/products?';
         if (category) url += `category=${category}&`;
         if (search) url += `search=${search}&`;
 

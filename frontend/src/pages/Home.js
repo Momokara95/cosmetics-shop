@@ -12,7 +12,7 @@ const Home = () => {
   useEffect(() => {
     const fetchFeaturedProducts = async () => {
       try {
-        const { data } = await axios.get('http://localhost:5000/api/products/featured');
+        const { data } = await axios.get('https://beaute-shop-production.up.railway.app/api/products/featured');
         setFeaturedProducts(data.data);
       } catch (error) {
         console.error('Erreur:', error);

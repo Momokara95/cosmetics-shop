@@ -76,7 +76,7 @@ const Checkout = () => {
 
       // Envoyer la commande au backend
       const { data } = await axios.post(
-        'http://localhost:5000/api/orders',
+        'https://beaute-shop-production.up.railway.app/api/orders',
         orderData,
         {
           headers: {

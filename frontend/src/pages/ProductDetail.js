@@ -20,7 +20,7 @@ const ProductDetail = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const { data } = await axios.get(`http://localhost:5000/api/products/${slug}`);
+        const { data } = await axios.get(`https://beaute-shop-production.up.railway.app/api/products/${slug}`);
         setProduct(data.data);
       } catch (error) {
         console.error('Erreur:', error);
