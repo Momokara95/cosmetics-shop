@@ -1,28 +1,29 @@
-const { Resend } = require("resend");
+const nodemailer = require("nodemailer");
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const transporter = nodemailer.createTransport({
+  host: process.env.EMAIL_HOST,
+  port: process.env.EMAIL_PORT,
+  secure: false, // TLS si 465, sinon false pour 587
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASSWORD
+  }
+});
 
-/**
- * Envoi email générique via RESEND
- */
 async function sendEmail(to, subject, html) {
   try {
-    const send = await resend.emails.send({
-      from: process.env.RESEND_FROM, // ex: "Beauty Shop <onboarding@resend.dev>"
+    await transporter.sendMail({
+      from: process.env.EMAIL_FROM,
       to,
       subject,
-      html,
+      html
     });
-
-    console.log("📧 Email envoyé :", send);
+    console.log("📧 Email envoyé à :", to);
   } catch (error) {
-    console.error("❌ Erreur Resend :", error);
+    console.error("❌ Erreur envoi email :", error);
   }
 }
 
-/**
- * Email confirmation de commande (client)
- */
 exports.sendOrderConfirmationToClient = async (order, user) => {
   const html = `
     <h2>Bonjour ${user.name},</h2>
@@ -30,13 +31,9 @@ exports.sendOrderConfirmationToClient = async (order, user) => {
     <p>Total : <strong>${order.totalPrice} CFA</strong></p>
     <p>Merci pour votre confiance !</p>
   `;
-
-  await sendEmail(user.email, "Confirmation de votre commande", html);
+  await sendEmail(user.email, "Confirmation de commande", html);
 };
 
-/**
- * Email notification admin
- */
 exports.sendOrderNotificationToAdmin = async (order, user) => {
   const html = `
     <h2>Nouvelle commande reçue</h2>
@@ -44,19 +41,14 @@ exports.sendOrderNotificationToAdmin = async (order, user) => {
     <p>Commande : <strong>${order.orderNumber}</strong></p>
     <p>Total : <strong>${order.totalPrice} CFA</strong></p>
   `;
-
   await sendEmail(process.env.ADMIN_EMAIL, "Nouvelle commande sur BeautyShop", html);
 };
 
-/**
- * Email mise à jour du statut
- */
 exports.sendOrderStatusUpdate = async (order, user, oldStatus, newStatus) => {
   const html = `
     <h2>Bonjour ${user.name},</h2>
     <p>Le statut de votre commande <strong>${order.orderNumber}</strong> a été mis à jour.</p>
     <p><strong>${oldStatus} ➝ ${newStatus}</strong></p>
   `;
-
-  await sendEmail(user.email, "Mise à jour du statut de votre commande", html);
+  await sendEmail(user.email, "Mise à jour de votre commande", html);
 };
