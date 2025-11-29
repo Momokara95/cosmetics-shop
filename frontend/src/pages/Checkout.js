@@ -7,10 +7,12 @@ import { CartContext } from '../context/CartContext';
 import { AuthContext } from '../context/AuthContext';
 import './Checkout.css';
 
+
 const Checkout = () => {
-  const { cart, getCartTotal, clearCart } = useContext(CartContext);
-  const { user } = useContext(AuthContext);
-  const navigate = useNavigate();
+  // Au début du composant, après les imports
+const { cart, getCartTotal, clearCart } = useContext(CartContext);
+const { user, API_URL } = useContext(AuthContext); // ✅ Ajoute API_URL
+const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     name: user?.name || '',
@@ -76,7 +78,7 @@ const Checkout = () => {
 
       // Envoyer la commande au backend
       const { data } = await axios.post(
-        'https://cosmetics-shop-production.up.railway.app/api/orders',
+        `${API_URL}/orders`,
         orderData,
         {
           headers: {
