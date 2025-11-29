@@ -87,7 +87,8 @@ export const AuthProvider = ({ children }) => {
         error,
         register,
         login,
-        logout
+        logout,
+         API_URL 
       }}
     >
       {children}
