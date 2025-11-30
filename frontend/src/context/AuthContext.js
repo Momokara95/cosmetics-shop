@@ -83,17 +83,19 @@ const login = async (email, password) => {
   };
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        loading,
-        error,
-        register,
-        login,
-        logout
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+  <AuthContext.Provider
+    value={{
+      user,
+      loading,
+      error,
+      register,
+      login,
+      logout,
+      API_URL
+    }}
+  >
+    {children}
+  </AuthContext.Provider>
+);
+
 };
