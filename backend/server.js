@@ -7,6 +7,7 @@ const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
 const errorHandler = require('./middleware/errorHandler');
+const { protect, admin } = require('./middleware/auth'); // <- import middleware auth
 const authRoutes = require('./routes/authRoutes');
 const productRoutes = require('./routes/productRoutes');
 const orderRoutes = require('./routes/orderRoutes');
@@ -68,6 +69,16 @@ app.use('/uploads', express.static('uploads'));
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
+
+// Exemple de route admin protégée
+app.get('/api/admin/add-product', protect, admin, (req, res) => {
+  res.json({
+    message: `✅ Bienvenue Admin ${req.user.name}`,
+    users: 120, // exemple statique, tu peux récupérer depuis DB
+    orders: 45,
+    revenue: 12345.67
+  });
+});
 
 app.get('/api', (req, res) => {
   res.json({
