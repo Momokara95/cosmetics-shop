@@ -10,18 +10,26 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let interval;
+
     const fetchFeaturedProducts = async () => {
       try {
         const { data } = await axios.get('https://cosmetics-shop-production.up.railway.app/api/products/featured');
         setFeaturedProducts(data.data);
+        setLoading(false);
       } catch (error) {
         console.error('Erreur:', error);
-      } finally {
-        setLoading(false);
       }
     };
 
+    // 🔥 1. Charger au démarrage
     fetchFeaturedProducts();
+
+    // 🔥 2. Auto-refresh toutes les 5 secondes
+    interval = setInterval(fetchFeaturedProducts, 5000);
+
+    // 🔥 3. Nettoyage
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -73,7 +81,7 @@ const Home = () => {
         <section className="featured-products">
           <div className="container">
             <h2>Produits en Vedette</h2>
-            
+
             {loading ? (
               <div className="loading">Chargement...</div>
             ) : (
