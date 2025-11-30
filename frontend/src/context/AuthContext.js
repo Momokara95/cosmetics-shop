@@ -54,24 +54,27 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Connexion
-  const login = async (email, password) => {
-    try {
-      setError(null);
-      const { data } = await axios.post(`${API_URL}/auth/login`, {
-        email,
-        password
-      });
+ // Connexion
+const login = async (email, password) => {
+  try {
+    setError(null);
+    const { data } = await axios.post(`${API_URL}/auth/login`, {
+      email,
+      password
+    });
 
-      localStorage.setItem('token', data.data.token);
-      setUser(data.data);
-      return { success: true };
-    } catch (err) {
-      const message = err.response?.data?.message || 'Erreur de connexion';
-      setError(message);
-      return { success: false, error: message };
-    }
-  };
+    localStorage.setItem('token', data.data.token);
+    setUser(data.data);
+
+    // ✅ Retourne le user pour utilisation côté front
+    return { success: true, user: data.data };
+  } catch (err) {
+    const message = err.response?.data?.message || 'Erreur de connexion';
+    setError(message);
+    return { success: false, error: message };
+  }
+};
+
 
   // Déconnexion
   const logout = () => {
