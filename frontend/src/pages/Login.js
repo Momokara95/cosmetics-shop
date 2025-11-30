@@ -24,7 +24,12 @@ const Login = () => {
     const result = await login(email, password);
 
     if (result.success) {
-      navigate(redirect);
+      // Redirection selon le rôle
+      if (result.user.role === 'admin') {
+        navigate('/admin/add-product');
+      } else {
+        navigate(redirect);
+      }
     } else {
       setError(result.error);
     }
@@ -44,11 +49,7 @@ const Login = () => {
             <p>Bon retour parmi nous !</p>
           </div>
 
-          {error && (
-            <div className="alert alert-error">
-              {error}
-            </div>
-          )}
+          {error && <div className="alert alert-error">{error}</div>}
 
           <form onSubmit={handleSubmit} className="auth-form">
             <div className="form-group">
@@ -76,19 +77,14 @@ const Login = () => {
               />
             </div>
 
-            <button
-              type="submit"
-              className="btn-submit"
-              disabled={loading}
-            >
+            <button type="submit" className="btn-submit" disabled={loading}>
               {loading ? 'Connexion...' : 'Se connecter'}
             </button>
           </form>
 
           <div className="auth-footer">
             <p>
-              Pas encore de compte ?{' '}
-              <Link to="/register">Inscrivez-vous</Link>
+              Pas encore de compte ? <Link to="/register">Inscrivez-vous</Link>
             </p>
           </div>
         </div>
