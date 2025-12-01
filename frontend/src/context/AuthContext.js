@@ -23,11 +23,20 @@ export const AuthProvider = ({ children }) => {
               Authorization: `Bearer ${token}`
             }
           });
-          setUser(data.data);
+
+          // 🔥 On s'assure d'avoir user + role
+          setUser({
+            id: data.data.id,
+            name: data.data.name,
+            email: data.data.email,
+            role: data.data.role      // 🔥 OBLIGATOIRE
+          });
+
         } catch (err) {
           localStorage.removeItem('token');
         }
       }
+
       setLoading(false);
     };
 
@@ -38,6 +47,7 @@ export const AuthProvider = ({ children }) => {
   const register = async (name, email, password) => {
     try {
       setError(null);
+
       const { data } = await axios.post(`${API_URL}/auth/register`, {
         name,
         email,
@@ -45,8 +55,16 @@ export const AuthProvider = ({ children }) => {
       });
 
       localStorage.setItem('token', data.data.token);
-      setUser(data.data);
+
+      setUser({
+        id: data.data.id,
+        name: data.data.name,
+        email: data.data.email,
+        role: data.data.role    // 🔥 On stocke le rôle
+      });
+
       return { success: true };
+
     } catch (err) {
       const message = err.response?.data?.message || 'Erreur lors de l\'inscription';
       setError(message);
@@ -54,27 +72,36 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
- // Connexion
-const login = async (email, password) => {
-  try {
-    setError(null);
-    const { data } = await axios.post(`${API_URL}/auth/login`, {
-      email,
-      password
-    });
+  // Connexion
+  const login = async (email, password) => {
+    try {
+      setError(null);
 
-    localStorage.setItem('token', data.data.token);
-    setUser(data.data);
+      const { data } = await axios.post(`${API_URL}/auth/login`, {
+        email,
+        password
+      });
 
-    // ✅ Retourne le user pour utilisation côté front
-    return { success: true, user: data.data };
-  } catch (err) {
-    const message = err.response?.data?.message || 'Erreur de connexion';
-    setError(message);
-    return { success: false, error: message };
-  }
-};
+      localStorage.setItem('token', data.data.token);
 
+      // 🔥 On extrait 100% des infos nécessaires
+      const userData = {
+        id: data.data.id,
+        name: data.data.name,
+        email: data.data.email,
+        role: data.data.role   // 🔥 TRÈS IMPORTANT
+      };
+
+      setUser(userData);
+
+      return { success: true, user: userData };
+
+    } catch (err) {
+      const message = err.response?.data?.message || 'Erreur de connexion';
+      setError(message);
+      return { success: false, error: message };
+    }
+  };
 
   // Déconnexion
   const logout = () => {
@@ -83,19 +110,18 @@ const login = async (email, password) => {
   };
 
   return (
-  <AuthContext.Provider
-    value={{
-      user,
-      loading,
-      error,
-      register,
-      login,
-      logout,
-      API_URL
-    }}
-  >
-    {children}
-  </AuthContext.Provider>
-);
-
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        error,
+        register,
+        login,
+        logout,
+        API_URL
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 };
