@@ -46,6 +46,14 @@ const Home = () => {
     <>
       <Helmet>
         <title>BeautéShop - Cosmétiques de Qualité | Accueil</title>
+        <meta
+          name="description"
+          content="Découvrez notre sélection de produits cosmétiques naturels et de qualité pour sublimer votre beauté au quotidien."
+        />
+        <meta
+          name="keywords"
+          content="cosmétiques, beauté, soins, maquillage, naturel"
+        />
       </Helmet>
 
       <div className="home-container">
@@ -151,6 +159,18 @@ const Home = () => {
             <p>30 jours</p>
           </div>
         </section>
+
+        {/* Footer Section */}
+        <footer className="footer">
+          <div className="footer-content">
+            <p>&copy; 2025 BeautéShop. Tous droits réservés.</p>
+            <div className="footer-links">
+              <Link to="/about">À propos</Link>
+              <Link to="/contact">Contact</Link>
+              <Link to="/terms">Conditions</Link>
+            </div>
+          </div>
+        </footer>
 
       </div>
     </>
