@@ -1,37 +1,46 @@
-/* ==========================
+/* -----------------------------
    GLOBAL
-========================== */
+------------------------------ */
 .home-container {
-  width: 100%;
-  overflow: hidden;
-  background: #fff;
   font-family: "Poppins", sans-serif;
+  color: #333;
+  overflow-x: hidden;
 }
 
-h1, h2, h3 {
-  margin: 0;
+h2 {
+  text-align: center;
+  font-size: 2rem;
+  margin: 40px 0 20px;
+  font-weight: 600;
 }
 
-/* ==========================
-   HERO
-========================== */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* -----------------------------
+   HERO SECTION
+------------------------------ */
 .hero {
   position: relative;
+  height: 70vh;
   width: 100%;
-  height: 75vh;
   overflow: hidden;
+  border-radius: 10px;
 }
 
 .hero-bg {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  filter: brightness(70%);
 }
 
 .hero-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.45);
+  background: rgba(0, 0, 0, 0.4);
 }
 
 .hero-content {
@@ -39,118 +48,94 @@ h1, h2, h3 {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  text-align: center;
   color: #fff;
-  z-index: 10;
+  text-align: center;
 }
 
 .hero-content h1 {
   font-size: 3rem;
-  font-weight: 700;
   margin-bottom: 10px;
 }
 
-.hero-content p {
-  font-size: 1.2rem;
-  margin-bottom: 20px;
-}
-
 .cta-button {
-  padding: 12px 25px;
-  background: #ff7eb3;
+  margin-top: 15px;
+  padding: 12px 30px;
+  background: #ff5fa2;
   color: #fff;
-  border-radius: 5px;
-  text-decoration: none;
-  font-weight: 600;
+  border-radius: 50px;
+  font-size: 1rem;
   transition: 0.3s;
 }
 
 .cta-button:hover {
-  background: #ff5b95;
+  background: #ff3f8b;
 }
 
-/* ==========================
+/* -----------------------------
    CATEGORIES
-========================== */
+------------------------------ */
 .categories {
-  padding: 60px 20px;
-  text-align: center;
-}
-
-.categories h2 {
-  font-size: 2rem;
-  margin-bottom: 30px;
-  font-weight: 600;
+  padding: 40px 0;
 }
 
 .category-grid {
   display: grid;
-  gap: 20px;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  max-width: 1100px;
-  margin: auto;
+  gap: 20px;
+  padding: 0 20px;
 }
 
 .category-card {
-  background: #fafafa;
-  padding: 25px;
-  border-radius: 10px;
-  text-decoration: none;
-  color: #333;
+  background: #fff;
+  padding: 20px;
+  text-align: center;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.07);
   transition: 0.3s;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
 .category-card:hover {
-  background: #ffe3ef;
   transform: translateY(-5px);
 }
 
 .category-card .icon {
   font-size: 2.5rem;
-  color: #ff7eb3;
-  margin-bottom: 10px;
+  color: #ff5fa2;
 }
 
-/* ==========================
+.category-card h3 {
+  margin-top: 10px;
+  font-size: 1.2rem;
+}
+
+/* -----------------------------
    FEATURED PRODUCTS
-========================== */
+------------------------------ */
 .featured-products {
-  padding: 50px 20px;
-  text-align: center;
-}
-
-.featured-products h2 {
-  font-size: 2rem;
-  font-weight: 600;
-  margin-bottom: 30px;
+  padding: 40px 0;
 }
 
 .product-slider {
-  max-width: 1200px;
-  margin: auto;
+  padding: 0 30px;
 }
 
 .product-card {
   background: #fff;
-  padding: 15px;
   border-radius: 10px;
-  margin: 10px;
-  text-align: center;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.07);
+  overflow: hidden;
   transition: 0.3s;
-  border: 1px solid #eee;
 }
 
 .product-card:hover {
-  box-shadow: 0 3px 15px rgba(0,0,0,0.1);
   transform: translateY(-6px);
 }
 
 .product-img-container {
   width: 100%;
-  height: 180px;
+  height: 230px;
   overflow: hidden;
-  border-radius: 10px;
+  background: #f4f4f4;
 }
 
 .product-img {
@@ -159,82 +144,237 @@ h1, h2, h3 {
   object-fit: cover;
 }
 
-.no-image {
-  background: #ddd;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 .product-info {
-  margin-top: 10px;
-}
-
-.product-info h3 {
-  font-size: 1.1rem;
-  font-weight: 600;
+  padding: 15px;
 }
 
 .product-brand {
-  color: #666;
+  color: #777;
   font-size: 0.9rem;
 }
 
 .product-price {
-  margin-top: 8px;
-  font-size: 1rem;
+  margin-top: 10px;
   font-weight: bold;
-  color: #ff7eb3;
+  color: #ff5fa2;
 }
 
 .old-price {
-  margin-left: 8px;
+  margin-left: 10px;
   text-decoration: line-through;
   color: #999;
-  font-size: 0.9rem;
 }
 
-/* ==========================
-   BENEFITS
-========================== */
-.benefits {
-  padding: 60px 25px;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 25px;
-  max-width: 1100px;
-  margin: auto;
-}
-
-.benefit-card {
-  padding: 25px;
-  text-align: center;
+/* -----------------------------
+   BEST SELLERS
+------------------------------ */
+.best-sellers {
+  padding: 40px;
   background: #fafafa;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.best-sellers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 25px;
+  padding: 0 20px;
+}
+
+.best-item {
+  background: #fff;
+  border-radius: 12px;
+  padding: 15px;
+  text-align: center;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.07);
   transition: 0.3s;
 }
 
-.benefit-card:hover {
-  background: #fff0f6;
+.best-item:hover {
   transform: translateY(-5px);
 }
 
-.benefit-card .icon {
-  font-size: 2.3rem;
-  color: #ff7eb3;
-  margin-bottom: 10px;
+.best-item img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 8px;
 }
 
-/* ==========================
+.best-item h3 {
+  margin: 10px 0 5px;
+  font-size: 1.1rem;
+}
+
+/* -----------------------------
+   REVIEWS
+------------------------------ */
+.reviews {
+  padding: 50px 0;
+  background: #fff;
+}
+
+.reviews-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 25px;
+  padding: 0 30px;
+}
+
+.review-card {
+  background: #fafafa;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.star {
+  color: #ffc107;
+  margin: 3px;
+}
+
+.review-card p {
+  margin: 10px 0;
+  color: #555;
+}
+
+/* -----------------------------
+   BLOG
+------------------------------ */
+.blog-section {
+  padding: 50px 0;
+}
+
+.blog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 25px;
+  padding: 0 20px;
+}
+
+.blog-card {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+  transition: 0.3s;
+}
+
+.blog-card:hover {
+  transform: translateY(-5px);
+}
+
+.blog-card img {
+  width: 100%;
+  height: 170px;
+  object-fit: cover;
+}
+
+.blog-card h3 {
+  font-size: 1.3rem;
+  padding: 15px;
+}
+
+.blog-card p {
+  padding: 0 15px 20px;
+  color: #666;
+}
+
+/* -----------------------------
+   NEWSLETTER
+------------------------------ */
+.newsletter {
+  padding: 60px 20px;
+  background: #ff5fa2;
+  color: white;
+  text-align: center;
+}
+
+.newsletter-form {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.newsletter-form input {
+  padding: 12px;
+  width: 280px;
+  border: none;
+  border-radius: 30px 0 0 30px;
+}
+
+.newsletter-form button {
+  padding: 12px 25px;
+  border: none;
+  background: #fff;
+  color: #ff5fa2;
+  font-weight: bold;
+  border-radius: 0 30px 30px 0;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.newsletter-form button:hover {
+  background: #ffe7f0;
+}
+
+/* -----------------------------
+   BRANDS
+------------------------------ */
+.brands {
+  padding: 40px 0;
+  text-align: center;
+}
+
+.brands-row {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.brands-row img {
+  filter: grayscale(100%);
+  opacity: 0.8;
+  transition: 0.3s;
+}
+
+.brands-row img:hover {
+  filter: grayscale(0);
+  opacity: 1;
+}
+
+/* -----------------------------
+   BENEFITS
+------------------------------ */
+.benefits {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 20px;
+  padding: 40px 20px;
+}
+
+.benefit-card {
+  background: #fff;
+  padding: 25px;
+  text-align: center;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.07);
+}
+
+.benefit-card .icon {
+  font-size: 2rem;
+  color: #ff5fa2;
+}
+
+/* -----------------------------
    FOOTER
-========================== */
+------------------------------ */
 .footer {
-  background: #222;
-  color: #eee;
+  background: #333;
+  color: #fff;
   padding: 30px 20px;
-  margin-top: 50px;
+  margin-top: 40px;
 }
 
 .footer-content {
@@ -242,27 +382,11 @@ h1, h2, h3 {
 }
 
 .footer-links a {
-  color: #ff7eb3;
+  color: #fff;
   margin: 0 10px;
-  text-decoration: none;
-  font-size: 0.9rem;
+  transition: 0.3s;
 }
 
 .footer-links a:hover {
-  text-decoration: underline;
-}
-
-/* ==========================
-   RESPONSIVE
-========================== */
-@media (max-width: 768px) {
-  .hero-content h1 {
-    font-size: 2.2rem;
-  }
-  .hero-content p {
-    font-size: 1rem;
-  }
-  .cta-button {
-    padding: 10px 20px;
-  }
+  color: #ff5fa2;
 }
