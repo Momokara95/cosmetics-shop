@@ -75,7 +75,7 @@ const Home = () => {
           </div>
         </section>
 
-        {/* Categories Section */}
+        {/* Categories */}
         <section className="categories">
           <h2>Nos Catégories</h2>
           <div className="category-grid">
@@ -98,7 +98,7 @@ const Home = () => {
           </div>
         </section>
 
-        {/* Featured Products Carousel */}
+        {/* Featured – Carousel */}
         <section className="featured-products">
           <h2>Nouveautés</h2>
           {loading ? (
@@ -119,13 +119,17 @@ const Home = () => {
                         <div className="no-image">Pas d'image</div>
                       )}
                     </div>
+
                     <div className="product-info">
                       <h3>{product.name}</h3>
                       <p className="product-brand">{product.brand}</p>
+
                       <div className="product-price">
                         <span>{product.price}€</span>
                         {product.compareAtPrice && (
-                          <span className="old-price">{product.compareAtPrice}€</span>
+                          <span className="old-price">
+                            {product.compareAtPrice}€
+                          </span>
                         )}
                       </div>
                     </div>
@@ -136,23 +140,26 @@ const Home = () => {
           )}
         </section>
 
-        {/* Benefits Section */}
+        {/* Benefits */}
         <section className="benefits">
           <div className="benefit-card">
             <FaTruck className="icon" />
             <h3>Livraison Rapide</h3>
             <p>Sous 48h</p>
           </div>
+
           <div className="benefit-card">
             <FaLock className="icon" />
             <h3>Paiement Sécurisé</h3>
             <p>Protection totale</p>
           </div>
+
           <div className="benefit-card">
             <FaLeaf className="icon" />
             <h3>Éco-responsable</h3>
             <p>Formules clean</p>
           </div>
+
           <div className="benefit-card">
             <FaHeart className="icon" />
             <h3>Satisfait ou Remboursé</h3>
@@ -160,7 +167,7 @@ const Home = () => {
           </div>
         </section>
 
-        {/* Footer Section */}
+        {/* Footer */}
         <footer className="footer">
           <div className="footer-content">
             <p>&copy; 2025 BeautéShop. Tous droits réservés.</p>
@@ -171,7 +178,6 @@ const Home = () => {
             </div>
           </div>
         </footer>
-
       </div>
     </>
   );
