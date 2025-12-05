@@ -15,26 +15,31 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkUser = async () => {
       const token = localStorage.getItem('token');
-      
+
       if (token) {
         try {
-          const { data } = await axios.get(`${API_URL}/auth/me`, {
+          const response = await axios.get(`${API_URL}/auth/me`, {
             headers: {
               Authorization: `Bearer ${token}`
             }
           });
 
-          // 🔥 On s'assure d'avoir user + role
+          const userData = response.data.data;
+
+          // On met à jour user + role
           setUser({
-            id: data.data.id,
-            name: data.data.name,
-            email: data.data.email,
-            role: data.data.role      // 🔥 OBLIGATOIRE
+            id: userData._id,
+            name: userData.name,
+            email: userData.email,
+            role: userData.role
           });
+
+          // On sauvegarde le rôle
+          localStorage.setItem("role", userData.role);
 
         } catch (err) {
           localStorage.removeItem('token');
-          localStorage.setItem('role', data.data.role);   
+          localStorage.removeItem('role');
         }
       }
 
@@ -49,20 +54,22 @@ export const AuthProvider = ({ children }) => {
     try {
       setError(null);
 
-      const { data } = await axios.post(`${API_URL}/auth/register`, {
+      const response = await axios.post(`${API_URL}/auth/register`, {
         name,
         email,
         password
       });
 
-      localStorage.setItem('token', data.data.token);
-      localStorage.setItem('role', data.data.role);   
+      const data = response.data.data;
+
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('role', data.role);
 
       setUser({
-        id: data.data.id,
-        name: data.data.name,
-        email: data.data.email,
-        role: data.data.role    // 🔥 On stocke le rôle
+        id: data._id,
+        name: data.name,
+        email: data.email,
+        role: data.role
       });
 
       return { success: true };
@@ -79,20 +86,21 @@ export const AuthProvider = ({ children }) => {
     try {
       setError(null);
 
-      const { data } = await axios.post(`${API_URL}/auth/login`, {
+      const response = await axios.post(`${API_URL}/auth/login`, {
         email,
         password
       });
 
-      localStorage.setItem('token', data.data.token);
-      localStorage.setItem('role', data.data.role);   
+      const data = response.data.data;
 
-      // 🔥 On extrait 100% des infos nécessaires
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('role', data.role);
+
       const userData = {
-        id: data.data.id,
-        name: data.data.name,
-        email: data.data.email,
-        role: data.data.role   // 🔥 TRÈS IMPORTANT
+        id: data._id,
+        name: data.name,
+        email: data.email,
+        role: data.role
       };
 
       setUser(userData);
@@ -109,6 +117,7 @@ export const AuthProvider = ({ children }) => {
   // Déconnexion
   const logout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('role');
     setUser(null);
   };
 
