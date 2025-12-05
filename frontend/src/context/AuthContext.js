@@ -34,6 +34,7 @@ export const AuthProvider = ({ children }) => {
 
         } catch (err) {
           localStorage.removeItem('token');
+          localStorage.setItem('role', data.data.role);   
         }
       }
 
@@ -55,6 +56,7 @@ export const AuthProvider = ({ children }) => {
       });
 
       localStorage.setItem('token', data.data.token);
+      localStorage.setItem('role', data.data.role);   
 
       setUser({
         id: data.data.id,
@@ -83,6 +85,7 @@ export const AuthProvider = ({ children }) => {
       });
 
       localStorage.setItem('token', data.data.token);
+      localStorage.setItem('role', data.data.role);   
 
       // 🔥 On extrait 100% des infos nécessaires
       const userData = {
