@@ -1,106 +1,176 @@
-// frontend/src/pages/admin/AddProduct.js
-import { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
-import axios from 'axios';
-import { AuthContext } from '../../context/AuthContext';
-import './AddProduct.css';
+import { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
+import axios from "axios";
+import { AuthContext } from "../../context/AuthContext";
+import "./AddProduct.css";
 
 const AddProduct = () => {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    price: '',
-    compareAtPrice: '',
-    category: 'visage',
-    brand: '',
-    stock: '',
+    name: "",
+    description: "",
+    price: "",
+    compareAtPrice: "",
+    category: "visage",
+    brand: "",
+    stock: "",
     featured: false,
-    ingredients: '',
-    benefits: '',
-    howToUse: '',
-    imageUrl: '',
-    seoTitle: '',
-    seoDescription: '',
-    seoKeywords: ''
+    ingredients: "",
+    benefits: "",
+    howToUse: "",
+    imageUrl: "",
+    seoTitle: "",
+    seoDescription: "",
+    seoKeywords: "",
   });
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  // Images uploadées
+  const [images, setImages] = useState([]);
 
-  // Vérifie si l'utilisateur est admin
-  if (!user || user.role !== 'admin') {
+  // Upload progress
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploading, setUploading] = useState(false);
+
+  // UI feedback
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  // Admin check
+  if (!user || user.role !== "admin") {
     return (
-      <div className="container" style={{ padding: '4rem 2rem', textAlign: 'center' }}>
+      <div style={{ padding: "4rem 2rem", textAlign: "center" }}>
         <h2>⛔ Accès refusé</h2>
         <p>Vous devez être administrateur pour accéder à cette page.</p>
       </div>
     );
   }
 
+  // 🔹 Inputs change
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData({
       ...formData,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === "checkbox" ? checked : value,
     });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-    setSuccess('');
+  // 🔹 Upload Multi Images
+  const handleMultiImageUpload = async (e) => {
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
+
+    setUploading(true);
+    setError("");
+
+    const token = localStorage.getItem("token");
 
     try {
-      const token = localStorage.getItem('token');
+      const uploadedImages = [];
 
-      // Préparer les données
+      for (let file of files) {
+        const form = new FormData();
+        form.append("image", file);
+
+        const { data } = await axios.post(
+          "https://cosmetics-shop-production.up.railway.app/api/upload",
+          form,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "multipart/form-data",
+            },
+            onUploadProgress: (evt) => {
+              const percent = Math.round((evt.loaded * 100) / evt.total);
+              setUploadProgress(percent);
+            },
+          }
+        );
+
+        uploadedImages.push({
+          url: data.url,
+          alt: formData.name || "Photo produit",
+        });
+      }
+
+      setImages([...images, ...uploadedImages]);
+      setUploading(false);
+      setUploadProgress(0);
+    } catch (err) {
+      setUploading(false);
+      setError("Erreur lors de l'upload des images");
+    }
+  };
+
+  // 🔹 Supprimer une image
+  const removeImage = (index) => {
+    setImages(images.filter((_, i) => i !== index));
+  };
+
+  // 🔹 Form Submit
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    setLoading(true);
+    setError("");
+    setSuccess("");
+
+    try {
+      const token = localStorage.getItem("token");
+
       const productData = {
         name: formData.name,
         description: formData.description,
         price: parseFloat(formData.price),
-        compareAtPrice: formData.compareAtPrice ? parseFloat(formData.compareAtPrice) : undefined,
+        compareAtPrice: formData.compareAtPrice
+          ? parseFloat(formData.compareAtPrice)
+          : undefined,
         category: formData.category,
         brand: formData.brand,
         stock: parseInt(formData.stock),
         featured: formData.featured,
-        images: formData.imageUrl ? [{
-          url: formData.imageUrl,
-          alt: formData.name
-        }] : [],
-        ingredients: formData.ingredients ? formData.ingredients.split(',').map(i => i.trim()) : [],
-        benefits: formData.benefits ? formData.benefits.split(',').map(b => b.trim()) : [],
+
+        // Images complètes (upload + URL)
+        images: [
+          ...images,
+          ...(formData.imageUrl
+            ? [{ url: formData.imageUrl, alt: formData.name }]
+            : []),
+        ],
+
+        ingredients: formData.ingredients
+          ? formData.ingredients.split(",").map((i) => i.trim())
+          : [],
+
+        benefits: formData.benefits
+          ? formData.benefits.split(",").map((b) => b.trim())
+          : [],
+
         howToUse: formData.howToUse,
+
         seoTitle: formData.seoTitle || formData.name,
         seoDescription: formData.seoDescription || formData.description,
-        seoKeywords: formData.seoKeywords ? formData.seoKeywords.split(',').map(k => k.trim()) : []
+        seoKeywords: formData.seoKeywords
+          ? formData.seoKeywords.split(",").map((k) => k.trim())
+          : [],
       };
 
-      const { data } = await axios.post(
-        'https://cosmetics-shop-production.up.railway.app/api/products',
+      await axios.post(
+        "https://cosmetics-shop-production.up.railway.app/api/products",
         productData,
         {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
 
-      setSuccess('✅ Produit ajouté avec succès !');
-      
-      // Réinitialiser le formulaire
-      setTimeout(() => {
-        navigate('/admin/products');
-      }, 2000);
+      setSuccess("Produit ajouté avec succès ✔");
 
+      setTimeout(() => navigate("/admin/products"), 1500);
     } catch (err) {
-      setError(err.response?.data?.message || 'Erreur lors de l\'ajout du produit');
+      setError(err.response?.data?.message || "Erreur lors de l'ajout");
     } finally {
       setLoading(false);
     }
@@ -109,7 +179,7 @@ const AddProduct = () => {
   return (
     <>
       <Helmet>
-        <title>Ajouter un produit - Admin</title>
+        <title>Ajouter un produit</title>
       </Helmet>
 
       <div className="add-product-page">
@@ -120,58 +190,49 @@ const AddProduct = () => {
           {success && <div className="alert alert-success">{success}</div>}
 
           <form onSubmit={handleSubmit} className="product-form">
-            {/* Informations de base */}
+
+            {/* 📝 Infos */}
             <div className="form-section">
               <h2>📝 Informations de base</h2>
 
               <div className="form-group">
-                <label htmlFor="name">Nom du produit *</label>
+                <label>Nom *</label>
                 <input
-                  type="text"
-                  id="name"
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
                   required
-                  placeholder="Ex: Crème Hydratante Bio"
                 />
               </div>
 
               <div className="form-group">
-                <label htmlFor="description">Description *</label>
+                <label>Description *</label>
                 <textarea
-                  id="description"
                   name="description"
                   value={formData.description}
                   onChange={handleChange}
-                  required
                   rows="4"
-                  placeholder="Décrivez le produit en détail..."
+                  required
                 />
               </div>
 
               <div className="form-row">
                 <div className="form-group">
-                  <label htmlFor="brand">Marque *</label>
+                  <label>Marque *</label>
                   <input
-                    type="text"
-                    id="brand"
                     name="brand"
                     value={formData.brand}
                     onChange={handleChange}
                     required
-                    placeholder="Ex: BeautéNature"
                   />
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="category">Catégorie *</label>
+                  <label>Catégorie *</label>
                   <select
-                    id="category"
                     name="category"
                     value={formData.category}
                     onChange={handleChange}
-                    required
                   >
                     <option value="visage">Visage</option>
                     <option value="corps">Corps</option>
@@ -184,193 +245,197 @@ const AddProduct = () => {
               </div>
             </div>
 
-            {/* Prix et stock */}
+            {/* 💰 Prix */}
             <div className="form-section">
               <h2>💰 Prix et stock</h2>
 
               <div className="form-row">
                 <div className="form-group">
-                  <label htmlFor="price">Prix (€) *</label>
+                  <label>Prix *</label>
                   <input
                     type="number"
-                    id="price"
                     name="price"
+                    step="0.01"
                     value={formData.price}
                     onChange={handleChange}
                     required
-                    min="0"
-                    step="0.01"
-                    placeholder="29.99"
                   />
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="compareAtPrice">Prix barré (€)</label>
+                  <label>Prix barré</label>
                   <input
                     type="number"
-                    id="compareAtPrice"
                     name="compareAtPrice"
+                    step="0.01"
                     value={formData.compareAtPrice}
                     onChange={handleChange}
-                    min="0"
-                    step="0.01"
-                    placeholder="39.99"
                   />
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="stock">Stock *</label>
+                  <label>Stock *</label>
                   <input
                     type="number"
-                    id="stock"
                     name="stock"
+                    min="0"
                     value={formData.stock}
                     onChange={handleChange}
                     required
-                    min="0"
-                    placeholder="50"
                   />
                 </div>
               </div>
 
-              <div className="form-group checkbox-group">
-                <label>
-                  <input
-                    type="checkbox"
-                    name="featured"
-                    checked={formData.featured}
-                    onChange={handleChange}
-                  />
-                  <span>⭐ Produit en vedette</span>
-                </label>
-              </div>
+              <label className="checkbox-group">
+                <input
+                  type="checkbox"
+                  name="featured"
+                  checked={formData.featured}
+                  onChange={handleChange}
+                />
+                <span>⭐ Produit en vedette</span>
+              </label>
             </div>
 
-            {/* Image */}
+            {/* 📸 Images */}
             <div className="form-section">
-              <h2>📸 Image</h2>
+              <h2>📸 Images</h2>
+
               <div className="form-group">
-                <label htmlFor="imageUrl">URL de l'image</label>
+                <label>Importer des images</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleMultiImageUpload}
+                />
+
+                {uploading && (
+                  <div className="upload-progress">
+                    Upload {uploadProgress}%
+                    <div className="progress-bar">
+                      <div
+                        className="progress-fill"
+                        style={{ width: uploadProgress + "%" }}
+                      ></div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {images.length > 0 && (
+                <div className="images-preview-grid">
+                  {images.map((img, i) => (
+                    <div className="preview-box" key={i}>
+                      <img src={img.url} alt="" />
+                      <button
+                        type="button"
+                        className="remove-btn"
+                        onClick={() => removeImage(i)}
+                      >
+                        ❌
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="form-group">
+                <label>URL image (optionnel)</label>
                 <input
                   type="url"
-                  id="imageUrl"
                   name="imageUrl"
                   value={formData.imageUrl}
                   onChange={handleChange}
-                  placeholder="https://example.com/image.jpg"
                 />
-                <small>Utilisez des images depuis Unsplash ou votre serveur</small>
               </div>
+
               {formData.imageUrl && (
                 <div className="image-preview">
-                  <img src={formData.imageUrl} alt="Aperçu" />
+                  <img src={formData.imageUrl} alt="" />
                 </div>
               )}
             </div>
 
-            {/* Détails produit */}
+            {/* 🌿 Détails */}
             <div className="form-section">
-              <h2>🌿 Détails du produit</h2>
+              <h2>🌿 Détails</h2>
 
               <div className="form-group">
-                <label htmlFor="ingredients">Ingrédients (séparés par des virgules)</label>
+                <label>Ingrédients</label>
                 <input
-                  type="text"
-                  id="ingredients"
                   name="ingredients"
                   value={formData.ingredients}
                   onChange={handleChange}
-                  placeholder="Acide Hyaluronique, Beurre de Karité, Vitamine E"
                 />
               </div>
 
               <div className="form-group">
-                <label htmlFor="benefits">Bienfaits (séparés par des virgules)</label>
+                <label>Bienfaits</label>
                 <input
-                  type="text"
-                  id="benefits"
                   name="benefits"
                   value={formData.benefits}
                   onChange={handleChange}
-                  placeholder="Hydratation 24h, Anti-âge, Apaise"
                 />
               </div>
 
               <div className="form-group">
-                <label htmlFor="howToUse">Mode d'emploi</label>
+                <label>Comment utiliser ?</label>
                 <textarea
-                  id="howToUse"
                   name="howToUse"
                   value={formData.howToUse}
                   onChange={handleChange}
-                  rows="3"
-                  placeholder="Appliquer matin et soir..."
-                />
+                ></textarea>
               </div>
             </div>
 
-            {/* SEO */}
+            {/* 🔍 SEO */}
             <div className="form-section">
-              <h2>🔍 SEO (Optionnel)</h2>
+              <h2>🔍 SEO</h2>
 
               <div className="form-group">
-                <label htmlFor="seoTitle">Titre SEO</label>
+                <label>Titre SEO</label>
                 <input
-                  type="text"
-                  id="seoTitle"
                   name="seoTitle"
                   value={formData.seoTitle}
                   onChange={handleChange}
-                  placeholder="Laissez vide pour utiliser le nom du produit"
-                  maxLength="60"
                 />
-                <small>Maximum 60 caractères</small>
               </div>
 
               <div className="form-group">
-                <label htmlFor="seoDescription">Description SEO</label>
+                <label>Description SEO</label>
                 <textarea
-                  id="seoDescription"
                   name="seoDescription"
                   value={formData.seoDescription}
                   onChange={handleChange}
-                  rows="2"
-                  placeholder="Laissez vide pour utiliser la description"
-                  maxLength="155"
-                />
-                <small>Maximum 155 caractères</small>
+                ></textarea>
               </div>
 
               <div className="form-group">
-                <label htmlFor="seoKeywords">Mots-clés SEO (séparés par des virgules)</label>
+                <label>Mots-clés</label>
                 <input
-                  type="text"
-                  id="seoKeywords"
                   name="seoKeywords"
                   value={formData.seoKeywords}
                   onChange={handleChange}
-                  placeholder="crème hydratante, bio, naturel"
                 />
               </div>
             </div>
 
-            {/* Boutons */}
+            {/* Actions */}
             <div className="form-actions">
               <button
                 type="button"
-                onClick={() => navigate(-1)}
                 className="btn-secondary"
+                onClick={() => navigate(-1)}
               >
                 Annuler
               </button>
-              <button
-                type="submit"
-                className="btn-primary"
-                disabled={loading}
-              >
-                {loading ? 'Ajout en cours...' : '✅ Ajouter le produit'}
+
+              <button className="btn-primary" type="submit" disabled={loading}>
+                {loading ? "Ajout..." : "Ajouter ✔"}
               </button>
             </div>
+
           </form>
         </div>
       </div>
