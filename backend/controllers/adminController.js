@@ -5,7 +5,7 @@ const Product = require('../models/Product');
 const Order = require('../models/Order');
 
 // ---------------------------------------------------
-// 💡 Constante pour la validation des statuts
+// 💡 Liste des statuts valides pour le Backend et le Frontend
 const VALID_STATUSES = ["Pending", "Shipped", "Delivered", "Cancelled"]; 
 // ---------------------------------------------------
 
@@ -63,7 +63,7 @@ const getLatestOrders = async (req, res, next) => {
 };
 
 /**
- * @desc    Mettre à jour le statut d'une commande (Fonctionnalité ajoutée)
+ * @desc    Mettre à jour le statut d'une commande
  * @route   PUT /api/admin/orders/:id/status
  * @access  Private/Admin
  */

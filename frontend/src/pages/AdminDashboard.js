@@ -3,7 +3,7 @@ import axios from "axios";
 import { FaUsers, FaBox, FaShoppingBag, FaChartLine, FaHistory } from 'react-icons/fa'; 
 import "./AdminDashboard.css";
 
-// Liste des statuts valides pour le menu déroulant
+// Liste des statuts valides (DOIT correspondre à la liste dans le Backend pour la validation)
 const STATUS_OPTIONS = ["Pending", "Shipped", "Delivered", "Cancelled"]; 
 
 // ---------------------------------------------------
@@ -36,6 +36,7 @@ const OrdersTable = ({ orders, onStatusChange, statusOptions }) => (
                         <select 
                             className={`status-select status-${order.status.toLowerCase()}`}
                             value={order.status}
+                            // Envoie l'ID de la commande et la nouvelle valeur de statut au parent
                             onChange={(e) => onStatusChange(order._id, e.target.value)}
                         >
                             {statusOptions.map(status => (
@@ -62,7 +63,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null); 
 
-  // 🔄 Gérer la mise à jour du statut (Fonctionnalité ajoutée)
+  // 🔄 Gérer la mise à jour du statut
   const handleStatusUpdate = async (orderId, newStatus) => {
     try {
         const token = localStorage.getItem("token");
@@ -73,7 +74,7 @@ export default function AdminDashboard() {
             { headers: { Authorization: `Bearer ${token}` } }
         );
 
-        // Met à jour l'état local du tableau pour refléter le changement immédiatement
+        // Met à jour l'état local pour refléter le changement immédiatement
         setLatestOrders(prevOrders => 
             prevOrders.map(order => 
                 order._id === orderId ? { ...order, status: newStatus } : order
@@ -82,7 +83,9 @@ export default function AdminDashboard() {
 
     } catch (err) {
         console.error("Erreur lors de la mise à jour du statut:", err);
-        setError("Échec de la mise à jour du statut. Vérifiez les logs Backend.");
+        // Affiche le message d'erreur précis du backend si disponible
+        const backendMessage = err.response?.data?.message || "Échec de la mise à jour du statut.";
+        setError(`❌ Erreur [${err.response?.status || 'API'}]: ${backendMessage}`);
     }
   };
 
@@ -92,7 +95,6 @@ export default function AdminDashboard() {
       try {
         const token = localStorage.getItem("token");
         
-        // Exécute les deux requêtes API en parallèle
         const [statsResponse, ordersResponse] = await Promise.all([
           axios.get(
             "https://cosmetics-shop-production.up.railway.app/api/admin/stats",
@@ -109,9 +111,8 @@ export default function AdminDashboard() {
 
       } catch (err) {
         console.error("Erreur de récupération des données:", err);
-        setError("Impossible de charger les données. Erreur 404/500 possible.");
+        setError("Impossible de charger les données. Vérifiez l'état du Backend.");
       } finally {
-        // ✅ Correction initiale: arrête le chargement quoi qu'il arrive
         setLoading(false); 
       }
     };
@@ -128,13 +129,12 @@ export default function AdminDashboard() {
     );
   }
 
-  if (error) {
-    return <p className="error-message">❌ Erreur : {error}</p>;
-  }
-
   return (
     <div className="admin-dashboard">
       
+      {/* ⚠️ Affiche l'erreur si elle existe */}
+      {error && <p className="error-message">{error}</p>}
+
       <div className="dashboard-header">
         <h1>👋 Dashboard Administrateur</h1>
         <p>Aperçu des performances de la boutique en ligne. Dernière mise à jour le {new Date().toLocaleTimeString()}.</p>
@@ -174,7 +174,6 @@ export default function AdminDashboard() {
         {latestOrders.length === 0 ? (
             <p className="placeholder">Aucune commande récente à afficher.</p>
         ) : (
-            // ⚙️ Appel de la table avec les fonctions de gestion
             <OrdersTable 
                 orders={latestOrders} 
                 onStatusChange={handleStatusUpdate} 

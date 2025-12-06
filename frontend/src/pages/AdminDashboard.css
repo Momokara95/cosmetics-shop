@@ -242,3 +242,65 @@
         color: #7f8c8d;
     }
 }
+
+/* --- Styles pour le menu déroulant de Statut --- */
+
+/* Style général du menu déroulant de statut */
+.status-select {
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    border: 1px solid transparent;
+    cursor: pointer;
+    appearance: none; /* Cache les flèches par défaut */
+    /* Ajout d'une flèche personnalisée pour l'esthétique */
+    background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+    background-repeat: no-repeat;
+    background-position-x: 95%;
+    background-position-y: center;
+    padding-right: 25px; 
+}
+
+/* Couleurs des différents statuts */
+.status-select.status-pending {
+    background-color: #fef0cd;
+    color: #f39c12;
+    border-color: #f39c12;
+}
+
+.status-select.status-shipped {
+    background-color: #d8f5e7;
+    color: #2ecc71;
+    border-color: #2ecc71;
+}
+
+.status-select.status-delivered {
+    background-color: #eaf4fd;
+    color: #3498db;
+    border-color: #3498db;
+}
+
+.status-select.status-cancelled {
+    background-color: #fbe0e0;
+    color: #e74c3c;
+    border-color: #e74c3c;
+}
+
+/* Assurez-vous que les options dans le select ont un fond blanc pour la lisibilité */
+.status-select option {
+    background: white; 
+    color: black;
+}
+
+/* --- Style d'erreur pour le dashboard --- */
+.error-message {
+    padding: 15px;
+    background-color: #fbe0e0;
+    color: #e74c3c;
+    border: 1px solid #e74c3c;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-weight: 700;
+}
