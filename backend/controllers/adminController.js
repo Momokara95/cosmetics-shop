@@ -4,6 +4,11 @@ const User = require('../models/User');
 const Product = require('../models/Product');
 const Order = require('../models/Order');
 
+// ---------------------------------------------------
+// 💡 Constante pour la validation des statuts
+const VALID_STATUSES = ["Pending", "Shipped", "Delivered", "Cancelled"]; 
+// ---------------------------------------------------
+
 /**
  * @desc    Récupérer les statistiques globales
  * @route   GET /api/admin/stats
@@ -36,7 +41,6 @@ const getLatestOrders = async (req, res, next) => {
     try {
         const latestOrders = await Order.find({})
             .sort({ createdAt: -1 }) 
-            // ✅ Utilise populate pour récupérer le nom du client
             .populate('user', 'name email') 
             .limit(10)          
             .select('_id totalAmount status createdAt user'); 
@@ -71,6 +75,13 @@ const updateOrderStatus = async (req, res, next) => {
         if (!status) {
             return res.status(400).json({ message: "Le statut de la commande est requis." });
         }
+        
+        // 🛡️ Vérification de la validité du statut
+        if (!VALID_STATUSES.includes(status)) {
+            return res.status(400).json({
+                message: `Statut non valide: ${status}. Statuts autorisés : ${VALID_STATUSES.join(', ')}`
+            });
+        }
 
         const order = await Order.findById(orderId);
 
@@ -78,7 +89,6 @@ const updateOrderStatus = async (req, res, next) => {
             return res.status(404).json({ message: "Commande non trouvée." });
         }
 
-        // Met à jour le statut et sauvegarde
         order.status = status;
         await order.save();
 
@@ -92,4 +102,4 @@ const updateOrderStatus = async (req, res, next) => {
     }
 };
 
-module.exports = { getStats, getLatestOrders, updateOrderStatus }; // ⬅️ EXPORT FINAL
+module.exports = { getStats, getLatestOrders, updateOrderStatus };
