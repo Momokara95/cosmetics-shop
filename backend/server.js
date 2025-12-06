@@ -93,6 +93,36 @@ app.get('/api/admin/stats', protect, admin, (req, res) => {
   });
 });
 
+// NOUVELLE ROUTE : Pour récupérer les dernières commandes (Résout l'erreur 404)
+app.get('/api/admin/latest-orders', protect, admin, (req, res) => {
+  // ⚠️ Ceci est une réponse statique temporaire pour tester le frontend
+  res.json({
+    data: [
+      { 
+        _id: "60a123a1b2c3d4e5f6g7h8i9", 
+        clientName: "Alice Dubois", 
+        totalAmount: 89.90, 
+        status: "Pending", 
+        date: "2025-12-05T10:00:00Z" 
+      },
+      { 
+        _id: "60b456b2c3d4e5f6g7h8i9j0", 
+        clientName: "Bob Martin", 
+        totalAmount: 125.50, 
+        status: "Shipped", 
+        date: "2025-12-04T15:30:00Z" 
+      },
+      { 
+        _id: "60c789c3d4e5f6g7h8i9k1l2", 
+        clientName: "Carla Dupont", 
+        totalAmount: 45.00, 
+        status: "Delivered", 
+        date: "2025-12-03T09:15:00Z" 
+      },
+    ]
+  });
+});
+
 app.get('/api', (req, res) => {
 // ...
   res.json({
