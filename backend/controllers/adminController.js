@@ -5,20 +5,15 @@ const Product = require('../models/Product');
 const Order = require('../models/Order');
 
 /**
- * @desc    Récupérer les statistiques globales pour le tableau de bord
+ * @desc    Récupérer les statistiques globales (nombre total)
  * @route   GET /api/admin/stats
  * @access  Private/Admin
  */
 const getStats = async (req, res, next) => {
     try {
-        // 1. Nombre total d'utilisateurs
+        // ✅ Récupération dynamique des comptes
         const usersCount = await User.countDocuments();
-        
-        // 2. Nombre de produits actifs (suppose un champ 'isActive' ou 'isDeleted')
-        // Si vous n'avez pas de champ de statut, utilisez simplement Product.countDocuments()
         const productsCount = await Product.countDocuments({ isDeleted: { $ne: true } }); 
-        
-        // 3. Nombre total de commandes
         const ordersCount = await Order.countDocuments(); 
         
         res.status(200).json({
@@ -29,7 +24,6 @@ const getStats = async (req, res, next) => {
             }
         });
     } catch (error) {
-        // Le middleware errorHandler prendra le relais
         next(error);
     }
 };
@@ -42,22 +36,19 @@ const getStats = async (req, res, next) => {
 const getLatestOrders = async (req, res, next) => {
     try {
         const latestOrders = await Order.find({})
-            // Trie par date de création décroissante (plus récent en premier)
-            .sort({ createdAt: -1 }) 
+            .sort({ createdAt: -1 }) // Trie par date de création (plus récent)
             .limit(10)          
-            // Peuplement (populate) des données de l'utilisateur (seulement le nom et l'email)
+            // ✅ CORRECTION POPULATE : Récupère le nom du client via la référence 'user'
             .populate('user', 'name email') 
-            // Sélectionne uniquement les champs nécessaires pour l'affichage
-            .select('_id totalAmount status createdAt user'); 
+            .select('_id totalAmount status createdAt user'); // Sélectionne les champs nécessaires
         
-        // Formate les données pour correspondre exactement à ce que le frontend OrdersTable attend
         const formattedOrders = latestOrders.map(order => ({
             _id: order._id,
-            // Récupère le nom de l'utilisateur peuplé. Utilise un fallback si l'utilisateur n'existe plus.
-            clientName: order.user ? order.user.name : "Utilisateur Inconnu", 
+            // Utilise le nom peuplé, avec un fallback si l'utilisateur est introuvable
+            clientName: order.user ? order.user.name : "Utilisateur Supprimé", 
             totalAmount: order.totalAmount,
             status: order.status,
-            date: order.createdAt // Utilise la date de création pour l'affichage
+            date: order.createdAt 
         }));
 
         res.status(200).json({
