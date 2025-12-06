@@ -141,3 +141,104 @@
     margin: 20px;
     border-radius: 4px;
 }
+
+/* --- AdminDashboard.css (Ajouter à la suite des styles existants) --- */
+
+/* --- Section des Commandes --- */
+
+.latest-orders-section h2 {
+    font-size: 1.5rem;
+    color: #34495e;
+    margin-bottom: 20px;
+}
+
+.latest-orders-section svg {
+    margin-right: 10px;
+    color: #3498db;
+}
+
+/* Style du Tableau */
+.orders-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    overflow: hidden; /* Pour que border-radius fonctionne avec les coins */
+}
+
+.orders-table thead {
+    background-color: #f4f7f9;
+    color: #2c3e50;
+    font-weight: 600;
+    text-align: left;
+}
+
+.orders-table th, .orders-table td {
+    padding: 15px;
+    border-bottom: 1px solid #e0e6eb;
+}
+
+.orders-table tbody tr:hover {
+    background-color: #f9fbfd;
+}
+
+/* Badge de statut */
+.status-badge {
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.status-pending {
+    background-color: #fef0cd;
+    color: #f39c12;
+}
+
+.status-shipped {
+    background-color: #d8f5e7;
+    color: #2ecc71;
+}
+
+.status-delivered {
+    background-color: #eaf4fd;
+    color: #3498db;
+}
+
+.status-cancelled {
+    background-color: #fbe0e0;
+    color: #e74c3c;
+}
+
+/* Cache les labels de colonnes pour les petits écrans (préparation responsive) */
+@media (max-width: 768px) {
+    .orders-table thead {
+        display: none;
+    }
+    .orders-table, .orders-table tbody, .orders-table tr, .orders-table td {
+        display: block;
+        width: 100%;
+    }
+    .orders-table tr {
+        margin-bottom: 15px;
+        border: 1px solid #e0e6eb;
+        border-radius: 8px;
+    }
+    .orders-table td {
+        text-align: right;
+        padding-left: 50%;
+        position: relative;
+    }
+    .orders-table td:before {
+        content: attr(data-label);
+        position: absolute;
+        left: 15px;
+        width: 50%;
+        padding-right: 10px;
+        white-space: nowrap;
+        font-weight: 600;
+        color: #7f8c8d;
+    }
+}
