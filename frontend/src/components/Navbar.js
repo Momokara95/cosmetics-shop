@@ -20,7 +20,7 @@ const Navbar = () => {
         <div className="nav-links">
           <Link to="/">Accueil</Link>
           <Link to="/products">Produits</Link>
-          
+
           <Link to="/cart" className="cart-link">
             🛒 Panier
             {getCartCount() > 0 && (
@@ -31,6 +31,31 @@ const Navbar = () => {
           {user ? (
             <>
               <span className="user-name">Bonjour, {user.name}</span>
+
+              {/* Espace Admin */}
+              {user.role === 'admin' && (
+                <>
+                  <Link to="/admin/dashboard" className="btn-link">
+                    Dashboard Admin
+                  </Link>
+                  <Link to="/admin/products" className="btn-link">
+                    Gestion Produits
+                  </Link>
+                </>
+              )}
+
+              {/* Espace Utilisateur */}
+              {user.role === 'user' && (
+                <>
+                  <Link to="/profile" className="btn-link">
+                    Mon Profil
+                  </Link>
+                  <Link to="/orders" className="btn-link">
+                    Mes Commandes
+                  </Link>
+                </>
+              )}
+
               <button onClick={logout} className="btn-logout">
                 Déconnexion
               </button>
