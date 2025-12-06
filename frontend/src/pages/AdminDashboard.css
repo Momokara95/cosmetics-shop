@@ -1,18 +1,143 @@
+/* --- AdminDashboard.css --- */
+
+/* Conteneur principal */
 .admin-dashboard {
-  padding: 40px;
+    padding: 30px;
+    background-color: #f4f7f9;
+    min-height: 100vh;
 }
 
+/* En-tête du Dashboard */
+.dashboard-header {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e0e6eb;
+}
+
+.dashboard-header h1 {
+    font-size: 2.2rem;
+    color: #34495e;
+    margin-bottom: 5px;
+}
+
+.dashboard-header p {
+    color: #7f8c8d;
+    font-size: 1rem;
+}
+
+/* Grille des statistiques */
 .stats-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+    margin-bottom: 40px;
 }
 
+/* Carte de statistique */
 .stat-card {
-  background: #fff;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  text-align: center;
-  font-size: 22px;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 25px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s, box-shadow 0.2s;
+    border-left: 5px solid transparent;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* Icône de la carte */
+.card-icon {
+    font-size: 2.5rem;
+    padding: 15px;
+    border-radius: 50%;
+    margin-right: 20px;
+    line-height: 1;
+}
+
+/* Couleurs spécifiques aux cartes */
+.stat-users { border-left-color: #3498db; }
+.stat-users .card-icon { background-color: #eaf4fd; color: #3498db; }
+
+.stat-products { border-left-color: #2ecc71; }
+.stat-products .card-icon { background-color: #e5f6eb; color: #2ecc71; }
+
+.stat-orders { border-left-color: #f39c12; }
+.stat-orders .card-icon { background-color: #fff9e6; color: #f39c12; }
+
+
+/* Contenu de la carte */
+.card-content h3 {
+    margin-top: 0;
+    font-size: 1.1rem;
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+.stat-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #34495e;
+    margin: 5px 0;
+    line-height: 1;
+}
+
+.stat-detail {
+    font-size: 0.8rem;
+    color: #95a5a6;
+    display: block;
+}
+
+/* Zone des graphiques */
+.charts-area {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.charts-area h2 {
+    color: #2c3e50;
+    margin-top: 0;
+    border-bottom: 1px solid #ecf0f1;
+    padding-bottom: 10px;
+    font-size: 1.5rem;
+}
+
+.placeholder {
+    color: #95a5a6;
+    padding: 20px;
+    text-align: center;
+    border: 1px dashed #ecf0f1;
+    border-radius: 8px;
+}
+
+/* Styles pour le chargement */
+.loading-spinner {
+    text-align: center;
+    padding: 50px;
+    color: #3498db;
+}
+
+.spinner-icon {
+    font-size: 3rem;
+    animation: spin 1.5s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.error-message {
+    padding: 20px;
+    background-color: #fcebeb;
+    color: #e74c3c;
+    border-left: 5px solid #e74c3c;
+    margin: 20px;
+    border-radius: 4px;
 }
