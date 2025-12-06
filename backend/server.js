@@ -70,17 +70,31 @@ app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 
+// ...
 // Exemple de route admin protégée
 app.get('/api/admin/add-product', protect, admin, (req, res) => {
-  res.json({
-    message: `✅ Bienvenue Admin ${req.user.name}`,
-    users: 120, // exemple statique, tu peux récupérer depuis DB
-    orders: 45,
-    revenue: 12345.67
-  });
+  res.json({
+    message: `✅ Bienvenue Admin ${req.user.name}`,
+    users: 120, // exemple statique, tu peux récupérer depuis DB
+    orders: 45,
+    revenue: 12345.67
+  });
+});
+
+// NOUVELLE ROUTE : Ajout de la route /api/admin/stats (Manquante !)
+app.get('/api/admin/stats', protect, admin, (req, res) => {
+  // Pour l'instant, renvoyons les mêmes données statiques que l'exemple
+  res.json({
+    data: { // Rappel : ton frontend attend un objet 'data'
+      users: 120, 
+      products: 50, // Ajout de 'products' pour correspondre à ton frontend
+      orders: 45
+    }
+  });
 });
 
 app.get('/api', (req, res) => {
+// ...
   res.json({
     message: '✅ API Cosmétiques - Fonctionnelle',
     version: '1.0.0',
