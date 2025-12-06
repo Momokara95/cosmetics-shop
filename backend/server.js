@@ -12,6 +12,9 @@ const authRoutes = require('./routes/authRoutes');
 const productRoutes = require('./routes/productRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 
+// ➡️ NOUVEAU : Importation du controller Admin
+const { getStats, getLatestOrders } = require('./controllers/adminController'); 
+
 const app = express();
 
 // ---------------------------------------------------
@@ -23,33 +26,33 @@ app.use(helmet());
 // CORS
 // ---------------------------------------------------
 const allowedOrigins = [
-  'http://localhost:3000',
-  'http://127.0.0.1:3000',
-  'https://cosmetics-shop-nine.vercel.app', // 🔥 FRONT VERCEL
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
+  'https://cosmetics-shop-nine.vercel.app', // 🔥 FRONT VERCEL
 ];
 
 app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-      return callback(null, false);
-    },
-    credentials: true,
-  })
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(null, false);
+    },
+    credentials: true,
+  })
 );
 
 // ---------------------------------------------------
 // RATE LIMIT
 // ---------------------------------------------------
 app.use(
-  '/api',
-  rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 100,
-    message: 'Trop de requêtes, réessayez dans 15 minutes',
-  })
+  '/api',
+  rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+    message: 'Trop de requêtes, réessayez dans 15 minutes',
+  })
 );
 
 // ---------------------------------------------------
@@ -70,8 +73,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 
-// ...
-// Exemple de route admin protégée
+// Exemple de route admin protégée (Peut rester ou être déplacée vers un controller si tu l'utilises)
 app.get('/api/admin/add-product', protect, admin, (req, res) => {
   res.json({
     message: `✅ Bienvenue Admin ${req.user.name}`,
@@ -81,54 +83,17 @@ app.get('/api/admin/add-product', protect, admin, (req, res) => {
   });
 });
 
-// NOUVELLE ROUTE : Ajout de la route /api/admin/stats (Manquante !)
-app.get('/api/admin/stats', protect, admin, (req, res) => {
-  // Pour l'instant, renvoyons les mêmes données statiques que l'exemple
-  res.json({
-    data: { // Rappel : ton frontend attend un objet 'data'
-      users: 120, 
-      products: 50, // Ajout de 'products' pour correspondre à ton frontend
-      orders: 45
-    }
-  });
-});
+// 🔄 MODIFIÉ : Utilise le controller getStats pour les données dynamiques
+app.get('/api/admin/stats', protect, admin, getStats); 
 
-// NOUVELLE ROUTE : Pour récupérer les dernières commandes (Résout l'erreur 404)
-app.get('/api/admin/latest-orders', protect, admin, (req, res) => {
-  // ⚠️ Ceci est une réponse statique temporaire pour tester le frontend
-  res.json({
-    data: [
-      { 
-        _id: "60a123a1b2c3d4e5f6g7h8i9", 
-        clientName: "Alice Dubois", 
-        totalAmount: 89.90, 
-        status: "Pending", 
-        date: "2025-12-05T10:00:00Z" 
-      },
-      { 
-        _id: "60b456b2c3d4e5f6g7h8i9j0", 
-        clientName: "Bob Martin", 
-        totalAmount: 125.50, 
-        status: "Shipped", 
-        date: "2025-12-04T15:30:00Z" 
-      },
-      { 
-        _id: "60c789c3d4e5f6g7h8i9k1l2", 
-        clientName: "Carla Dupont", 
-        totalAmount: 45.00, 
-        status: "Delivered", 
-        date: "2025-12-03T09:15:00Z" 
-      },
-    ]
-  });
-});
+// 🔄 MODIFIÉ : Utilise le controller getLatestOrders pour les données dynamiques
+app.get('/api/admin/latest-orders', protect, admin, getLatestOrders);
 
 app.get('/api', (req, res) => {
-// ...
-  res.json({
-    message: '✅ API Cosmétiques - Fonctionnelle',
-    version: '1.0.0',
-  });
+  res.json({
+    message: '✅ API Cosmétiques - Fonctionnelle',
+    version: '1.0.0',
+  });
 });
 
 // ---------------------------------------------------
@@ -140,13 +105,13 @@ app.use(errorHandler);
 // CONNECTION MONGODB
 // ---------------------------------------------------
 const connectDB = async () => {
-  try {
-    await mongoose.connect(process.env.MONGODB_URI);
-    console.log('✅ MongoDB connecté avec succès');
-  } catch (error) {
-    console.error('❌ Erreur MongoDB :', error.message);
-    process.exit(1);
-  }
+  try {
+    await mongoose.connect(process.env.MONGODB_URI);
+    console.log('✅ MongoDB connecté avec succès');
+  } catch (error) {
+    console.error('❌ Erreur MongoDB :', error.message);
+    process.exit(1);
+  }
 };
 
 // ---------------------------------------------------
@@ -155,19 +120,19 @@ const connectDB = async () => {
 const PORT = process.env.PORT || 5000;
 
 connectDB().then(() => {
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`
 🚀 Serveur démarré sur le port ${PORT}
 🌍 Mode: ${process.env.NODE_ENV || 'development'}
 📡 API Local: http://localhost:${PORT}/api
-    `);
-  });
+    `);
+  });
 });
 
 // ---------------------------------------------------
 // ERREURS NON GÉRÉES
 // ---------------------------------------------------
 process.on('unhandledRejection', (err) => {
-  console.error('❌ Erreur non gérée:', err.message);
-  process.exit(1);
+  console.error('❌ Erreur non gérée:', err.message);
+  process.exit(1);
 });

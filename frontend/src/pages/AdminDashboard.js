@@ -1,80 +1,12 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-// ... (imports existants)
-import { FaUsers, FaBox, FaShoppingBag, FaChartLine, FaHistory } from 'react-icons/fa'; // Ajout de FaHistory
+// Importation des icônes pour la mise en page
+import { FaUsers, FaBox, FaShoppingBag, FaChartLine, FaHistory } from 'react-icons/fa'; 
 import "./AdminDashboard.css";
 
-export default function AdminDashboard() {
-  const [stats, setStats] = useState({ users: 0, products: 0, orders: 0 });
-  // NOUVEL ÉTAT POUR LES COMMANDES
-  const [latestOrders, setLatestOrders] = useState([]); 
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const fetchStatsAndOrders = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        
-        // 1. Fetch des Statistiques (déjà fait)
-        const statsResponse = await axios.get(
-          "https://cosmetics-shop-production.up.railway.app/api/admin/stats",
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        setStats(statsResponse.data.data);
-
-        // 2. Fetch des Dernières Commandes (NOUVEAU)
-        // ATTENTION : Cette route doit exister dans le backend !
-        const ordersResponse = await axios.get(
-            "https://cosmetics-shop-production.up.railway.app/api/admin/latest-orders",
-            { headers: { Authorization: `Bearer ${token}` } }
-        );
-        // On suppose que l'API renvoie un tableau d'objets commandes.
-        setLatestOrders(ordersResponse.data.data); 
-
-      } catch (err) {
-        console.error("Erreur de récupération des données:", err);
-        // Si l'erreur est juste la route des commandes qui manque, on affiche quand même les stats.
-        setError("Impossible de charger toutes les données du tableau de bord. La route 'latest-orders' est-elle déployée ?");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchStatsAndOrders();
-  }, []);
-
-  // ... (if (loading) et if (error) restent inchangés)
-
-  return (
-    <div className="admin-dashboard">
-      
-      {/* 🌟 SECTION BIENVENUE */}
-      <div className="dashboard-header">
-        <h1>👋 Dashboard Administrateur</h1>
-        <p>Aperçu des performances de la boutique en ligne. Dernière mise à jour le {new Date().toLocaleTimeString()}.</p>
-      </div>
-      
-      {/* 💳 GRILLE DES STATISTIQUES */}
-      <div className="stats-grid">
-        {/* (Contenu des cartes stat-card reste le même) */}
-      </div>
-      
-      {/* 📦 NOUVELLE SECTION : DERNIÈRES COMMANDES */}
-      <div className="latest-orders-section">
-        <h2><FaHistory /> Dernières Commandes Récentes</h2>
-        {latestOrders.length === 0 && !loading ? (
-            <p className="placeholder">Aucune commande récente à afficher.</p>
-        ) : (
-            <OrdersTable orders={latestOrders} />
-        )}
-      </div>
-
-    </div>
-  );
-}
-
-// Composant pour afficher le tableau des commandes
+// ---------------------------------------------------
+// Composant pour l'affichage du Tableau des Commandes
+// ---------------------------------------------------
 const OrdersTable = ({ orders }) => (
     <table className="orders-table">
         <thead>
@@ -97,9 +29,121 @@ const OrdersTable = ({ orders }) => (
                             {order.status}
                         </span>
                     </td>
+                    {/* Assurez-vous que la date est formatée correctement */}
                     <td data-label="Date">{new Date(order.date).toLocaleDateString()}</td>
                 </tr>
             ))}
         </tbody>
     </table>
 );
+
+
+// ---------------------------------------------------
+// Composant Principal
+// ---------------------------------------------------
+export default function AdminDashboard() {
+  const [stats, setStats] = useState({ users: 0, products: 0, orders: 0 });
+  const [latestOrders, setLatestOrders] = useState([]); 
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null); 
+
+  useEffect(() => {
+    const fetchStatsAndOrders = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        
+        // Exécute les deux requêtes API en parallèle
+        const [statsResponse, ordersResponse] = await Promise.all([
+          axios.get(
+            "https://cosmetics-shop-production.up.railway.app/api/admin/stats",
+            { headers: { Authorization: `Bearer ${token}` } }
+          ),
+          axios.get(
+            "https://cosmetics-shop-production.up.railway.app/api/admin/latest-orders",
+            { headers: { Authorization: `Bearer ${token}` } }
+          )
+        ]);
+        
+        // Mise à jour des états avec les données dynamiques
+        setStats(statsResponse.data.data);
+        setLatestOrders(ordersResponse.data.data); 
+
+      } catch (err) {
+        console.error("Erreur de récupération des données:", err);
+        setError("Impossible de charger toutes les données. Vérifiez la connexion API.");
+      } finally {
+        // CORRECTION DU PROBLÈME INITIAL : arrête le chargement quoi qu'il arrive
+        setLoading(false); 
+      }
+    };
+
+    fetchStatsAndOrders();
+  }, []);
+
+  if (loading) {
+    return (
+        <div className="loading-spinner">
+            <FaChartLine className="spinner-icon" />
+            <p>Analyse des données en cours...</p>
+        </div>
+    );
+  }
+
+  if (error) {
+    return <p className="error-message">❌ Erreur : {error}</p>;
+  }
+
+  return (
+    <div className="admin-dashboard">
+      
+      {/* 🌟 SECTION BIENVENUE */}
+      <div className="dashboard-header">
+        <h1>👋 Dashboard Administrateur</h1>
+        <p>Aperçu des performances de la boutique en ligne. Dernière mise à jour le {new Date().toLocaleTimeString()}.</p>
+      </div>
+      
+      {/* 💳 GRILLE DES STATISTIQUES */}
+      <div className="stats-grid">
+        
+        <div className="stat-card stat-users">
+          <div className="card-icon"><FaUsers /></div>
+          <div className="card-content">
+            <h3>Utilisateurs</h3>
+            <p className="stat-value">{stats.users}</p>
+            <span className="stat-detail">Total enregistré</span>
+          </div>
+        </div>
+
+        <div className="stat-card stat-products">
+          <div className="card-icon"><FaBox /></div>
+          <div className="card-content">
+            <h3>Produits Actifs</h3>
+            <p className="stat-value">{stats.products}</p>
+            <span className="stat-detail">Articles disponibles à la vente</span>
+          </div>
+        </div>
+
+        <div className="stat-card stat-orders">
+          <div className="card-icon"><FaShoppingBag /></div>
+          <div className="card-content">
+            <h3>Commandes Total</h3>
+            <p className="stat-value">{stats.orders}</p>
+            <span className="stat-detail">Commandes enregistrées</span>
+          </div>
+        </div>
+        
+      </div>
+      
+      {/* 📦 SECTION : DERNIÈRES COMMANDES */}
+      <div className="latest-orders-section">
+        <h2><FaHistory /> Dernières Commandes Récentes</h2>
+        {latestOrders.length === 0 ? (
+            <p className="placeholder">Aucune commande récente à afficher.</p>
+        ) : (
+            <OrdersTable orders={latestOrders} />
+        )}
+      </div>
+
+    </div>
+  );
+}
