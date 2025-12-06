@@ -8,13 +8,12 @@ const {
   createProduct,
   updateProduct,
   deleteProduct,
-  getFeaturedProducts,
-  getNewProducts, // ✅ Assurez-vous que cette fonction existe dans productController
+  getFeaturedProducts
 } = require('../controllers/productController');
 
 const Product = require('../models/Product');
 const User = require('../models/User');
-const Order = require('../models/Order');
+const Order = require('../models/Order'); // Si tu n'as pas encore Order, dis-moi je te le crée
 
 const { protect, admin } = require('../middleware/auth');
 
@@ -26,9 +25,6 @@ const { protect, admin } = require('../middleware/auth');
 router.route('/')
   .get(getProducts)
   .post(protect, admin, createProduct);
-
-// 🆕 Nouveaux produits (les plus récents)
-router.get('/new', getNewProducts);
 
 // Produits en vedette
 router.get('/featured', getFeaturedProducts);

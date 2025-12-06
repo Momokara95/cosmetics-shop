@@ -172,14 +172,14 @@ exports.deleteProduct = async (req, res) => {
   }
 };
 
-// @desc    Récupère les nouveaux produits (les plus récents)
-// @route   GET /api/products/new
+// @desc    Récupère les produits en vedette
+// @route   GET /api/products/featured
 // @access  Public
-exports.getNewProducts = async (req, res) => {
+exports.getFeaturedProducts = async (req, res) => {
   try {
-    const products = await Product.find({ isActive: true })
-      .sort({ createdAt: -1 }) // du plus récent au plus ancien
-      .limit(10); // limite à 10 produits, tu peux ajuster
+    const products = await Product.find({ featured: true, isActive: true })
+      .limit(8)
+      .sort('-createdAt');
 
     res.status(200).json({
       success: true,
@@ -187,10 +187,10 @@ exports.getNewProducts = async (req, res) => {
       data: products
     });
   } catch (error) {
-    console.error('❌ Erreur nouveaux produits :', error);
+    console.error('❌ Erreur produits vedette:', error);
     res.status(500).json({
       success: false,
-      message: 'Erreur lors de la récupération des nouveaux produits'
+      message: error.message || 'Erreur lors de la récupération des produits en vedette'
     });
   }
 };

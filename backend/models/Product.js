@@ -42,23 +42,10 @@ const productSchema = new mongoose.Schema({
     min: [0, 'Le stock ne peut pas être négatif'],
     default: 0
   },
-
-  // ✅ IMAGES MIXTES (URL ou chemin fichier upload)
-  images: [
-    {
-      type: mongoose.Schema.Types.Mixed,
-      validate: {
-        validator: function (val) {
-          return (
-            typeof val === "string" ||
-            (typeof val === "object" && val.url && typeof val.url === "string")
-          );
-        },
-        message: "Format d'image invalide (URL string ou objet {url, alt})"
-      }
-    }
-  ],
-
+  images: [{
+    url: String,
+    alt: String
+  }],
   ingredients: [String],
   benefits: [String],
   howToUse: String,
@@ -90,8 +77,8 @@ const productSchema = new mongoose.Schema({
 // Index pour la recherche
 productSchema.index({ name: 'text', description: 'text', brand: 'text' });
 
-// Slug auto
-productSchema.pre('save', function () {
+// Créer automatiquement le slug à partir du nom (SANS next callback)
+productSchema.pre('save', function() {
   if (this.isModified('name')) {
     this.slug = this.name
       .toLowerCase()
