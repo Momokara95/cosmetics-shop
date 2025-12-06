@@ -3,10 +3,13 @@ import axios from "axios";
 import { FaUsers, FaBox, FaShoppingBag, FaChartLine, FaHistory } from 'react-icons/fa'; 
 import "./AdminDashboard.css";
 
+// Liste des statuts valides pour le menu déroulant
+const STATUS_OPTIONS = ["Pending", "Shipped", "Delivered", "Cancelled"]; 
+
 // ---------------------------------------------------
 // Composant pour l'affichage du Tableau des Commandes
 // ---------------------------------------------------
-const OrdersTable = ({ orders }) => (
+const OrdersTable = ({ orders, onStatusChange, statusOptions }) => (
     <table className="orders-table">
         <thead>
             <tr>
@@ -23,15 +26,24 @@ const OrdersTable = ({ orders }) => (
                     <td data-label="ID Commande">#{order._id.slice(-6)}</td>
                     <td data-label="Client">{order.clientName}</td>
                     <td data-label="Montant">
-                        {/* ✅ CORRECTION toFixed: Vérifie que totalAmount est bien défini avant de formater */}
+                        {/* ✅ Correction: Vérifie que totalAmount est défini avant toFixed(2) */}
                         {order.totalAmount !== undefined && order.totalAmount !== null 
                             ? order.totalAmount.toFixed(2) + ' €'
                             : '0.00 €'}
                     </td>
                     <td data-label="Statut">
-                        <span className={`status-badge status-${order.status.toLowerCase()}`}>
-                            {order.status}
-                        </span>
+                        {/* ⚙️ Menu déroulant de gestion du statut */}
+                        <select 
+                            className={`status-select status-${order.status.toLowerCase()}`}
+                            value={order.status}
+                            onChange={(e) => onStatusChange(order._id, e.target.value)}
+                        >
+                            {statusOptions.map(status => (
+                                <option key={status} value={status}>
+                                    {status}
+                                </option>
+                            ))}
+                        </select>
                     </td>
                     <td data-label="Date">{new Date(order.date).toLocaleDateString()}</td>
                 </tr>
@@ -49,6 +61,31 @@ export default function AdminDashboard() {
   const [latestOrders, setLatestOrders] = useState([]); 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null); 
+
+  // 🔄 Gérer la mise à jour du statut (Fonctionnalité ajoutée)
+  const handleStatusUpdate = async (orderId, newStatus) => {
+    try {
+        const token = localStorage.getItem("token");
+        
+        await axios.put(
+            `https://cosmetics-shop-production.up.railway.app/api/admin/orders/${orderId}/status`,
+            { status: newStatus },
+            { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        // Met à jour l'état local du tableau pour refléter le changement immédiatement
+        setLatestOrders(prevOrders => 
+            prevOrders.map(order => 
+                order._id === orderId ? { ...order, status: newStatus } : order
+            )
+        );
+
+    } catch (err) {
+        console.error("Erreur lors de la mise à jour du statut:", err);
+        setError("Échec de la mise à jour du statut. Vérifiez les logs Backend.");
+    }
+  };
+
 
   useEffect(() => {
     const fetchStatsAndOrders = async () => {
@@ -72,9 +109,9 @@ export default function AdminDashboard() {
 
       } catch (err) {
         console.error("Erreur de récupération des données:", err);
-        setError("Impossible de charger les données. Vérifiez la connexion API.");
+        setError("Impossible de charger les données. Erreur 404/500 possible.");
       } finally {
-        // ✅ CORRECTION LOGIQUE : arrête le chargement quoi qu'il arrive
+        // ✅ Correction initiale: arrête le chargement quoi qu'il arrive
         setLoading(false); 
       }
     };
@@ -137,7 +174,12 @@ export default function AdminDashboard() {
         {latestOrders.length === 0 ? (
             <p className="placeholder">Aucune commande récente à afficher.</p>
         ) : (
-            <OrdersTable orders={latestOrders} />
+            // ⚙️ Appel de la table avec les fonctions de gestion
+            <OrdersTable 
+                orders={latestOrders} 
+                onStatusChange={handleStatusUpdate} 
+                statusOptions={STATUS_OPTIONS}
+            />
         )}
       </div>
 

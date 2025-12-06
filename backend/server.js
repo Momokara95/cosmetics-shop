@@ -12,8 +12,8 @@ const authRoutes = require('./routes/authRoutes');
 const productRoutes = require('./routes/productRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 
-// ➡️ NOUVEAU : Importation du controller Admin
-const { getStats, getLatestOrders } = require('./controllers/adminController'); 
+// ➡️ NOUVEAU : Importation du controller Admin (Incluant updateOrderStatus)
+const { getStats, getLatestOrders, updateOrderStatus } = require('./controllers/adminController'); 
 
 const app = express();
 
@@ -83,11 +83,14 @@ app.get('/api/admin/add-product', protect, admin, (req, res) => {
   });
 });
 
-// 🔄 MODIFIÉ : Utilise le controller getStats pour les données dynamiques
+// ✅ Route pour les statistiques générales
 app.get('/api/admin/stats', protect, admin, getStats); 
 
-// 🔄 MODIFIÉ : Utilise le controller getLatestOrders pour les données dynamiques
+// ✅ Route pour les dernières commandes
 app.get('/api/admin/latest-orders', protect, admin, getLatestOrders);
+
+// ⚙️ NOUVELLE ROUTE : Mise à jour du statut (Méthode PUT)
+app.put('/api/admin/orders/:id/status', protect, admin, updateOrderStatus); 
 
 app.get('/api', (req, res) => {
   res.json({

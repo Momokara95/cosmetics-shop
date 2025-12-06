@@ -5,13 +5,12 @@ const Product = require('../models/Product');
 const Order = require('../models/Order');
 
 /**
- * @desc    Récupérer les statistiques globales (nombre total)
+ * @desc    Récupérer les statistiques globales
  * @route   GET /api/admin/stats
  * @access  Private/Admin
  */
 const getStats = async (req, res, next) => {
     try {
-        // ✅ Récupération dynamique des comptes
         const usersCount = await User.countDocuments();
         const productsCount = await Product.countDocuments({ isDeleted: { $ne: true } }); 
         const ordersCount = await Order.countDocuments(); 
@@ -36,15 +35,14 @@ const getStats = async (req, res, next) => {
 const getLatestOrders = async (req, res, next) => {
     try {
         const latestOrders = await Order.find({})
-            .sort({ createdAt: -1 }) // Trie par date de création (plus récent)
-            .limit(10)          
-            // ✅ CORRECTION POPULATE : Récupère le nom du client via la référence 'user'
+            .sort({ createdAt: -1 }) 
+            // ✅ Utilise populate pour récupérer le nom du client
             .populate('user', 'name email') 
-            .select('_id totalAmount status createdAt user'); // Sélectionne les champs nécessaires
+            .limit(10)          
+            .select('_id totalAmount status createdAt user'); 
         
         const formattedOrders = latestOrders.map(order => ({
             _id: order._id,
-            // Utilise le nom peuplé, avec un fallback si l'utilisateur est introuvable
             clientName: order.user ? order.user.name : "Utilisateur Supprimé", 
             totalAmount: order.totalAmount,
             status: order.status,
@@ -60,4 +58,38 @@ const getLatestOrders = async (req, res, next) => {
     }
 };
 
-module.exports = { getStats, getLatestOrders };
+/**
+ * @desc    Mettre à jour le statut d'une commande (Fonctionnalité ajoutée)
+ * @route   PUT /api/admin/orders/:id/status
+ * @access  Private/Admin
+ */
+const updateOrderStatus = async (req, res, next) => {
+    try {
+        const orderId = req.params.id;
+        const { status } = req.body; 
+
+        if (!status) {
+            return res.status(400).json({ message: "Le statut de la commande est requis." });
+        }
+
+        const order = await Order.findById(orderId);
+
+        if (!order) {
+            return res.status(404).json({ message: "Commande non trouvée." });
+        }
+
+        // Met à jour le statut et sauvegarde
+        order.status = status;
+        await order.save();
+
+        res.status(200).json({
+            message: `Statut de la commande ${orderId} mis à jour à : ${status}`,
+            data: order 
+        });
+
+    } catch (error) {
+        next(error);
+    }
+};
+
+module.exports = { getStats, getLatestOrders, updateOrderStatus }; // ⬅️ EXPORT FINAL
