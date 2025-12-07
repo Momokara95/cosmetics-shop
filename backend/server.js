@@ -4,7 +4,6 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
-// 🚨 AJOUT : Importation du module path (bonne pratique)
 const path = require('path'); 
 require('dotenv').config();
 
@@ -13,8 +12,7 @@ const { protect, admin } = require('./middleware/auth');
 const authRoutes = require('./routes/authRoutes');
 const productRoutes = require('./routes/productRoutes');
 const orderRoutes = require('./routes/orderRoutes');
-// ✅ NOUVEL IMPORT : La route pour l'upload permanent via Cloudinary
-const uploadRoutes = require('./routes/uploadRoutes'); 
+const uploadRoutes = require('./routes/uploadRoutes'); // Cloudinary
 
 const { getStats, getLatestOrders, updateOrderStatus } = require('./controllers/adminController'); 
 
@@ -26,19 +24,18 @@ const app = express();
 app.use(helmet());
 
 // ---------------------------------------------------
-// CORS (SOLUTION ROBUSTE CONTRE LE BLOCAGE)
+// CORS (CORRIGÉ ET ROBUSTE)
 // ---------------------------------------------------
 const allowedOrigins = [
   'http://localhost:3000',
   'http://127.0.0.1:3000',
-  'https://cosmetics-shop-nine.vercel.app', // 🔥 VOTRE FRONT VERCEL
+  'https://cosmetics-shop-nine.vercel.app', 
 ];
 
 app.use(
   cors({
-    origin: allowedOrigins, // Utilisation du tableau direct pour la robustesse
+    origin: allowedOrigins,
     credentials: true,
-    // Précision des méthodes et headers pour les requêtes OPTIONS (Preflight)
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], 
     allowedHeaders: ['Content-Type', 'Authorization'],
   })
@@ -63,21 +60,13 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // ---------------------------------------------------
-// FICHIERS STATIQUES (Supprimé car Cloudinary gère l'hébergement)
-// ---------------------------------------------------
-// app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); 
-// (La ligne précédente a été supprimée ou commentée car elle n'est plus utile avec Cloudinary)
-
-
-// ---------------------------------------------------
 // ROUTES API
 // ---------------------------------------------------
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
-app.use('/api/upload', uploadRoutes); // ✅ ROUTE D'UPLOAD CLOUDINARY ACTIVÉE
+app.use('/api/upload', uploadRoutes); 
 
-// Exemple de route admin protégée (Inchangé)
 app.get('/api/admin/add-product', protect, admin, (req, res) => {
   res.json({
     message: `✅ Bienvenue Admin ${req.user.name}`,
@@ -87,13 +76,8 @@ app.get('/api/admin/add-product', protect, admin, (req, res) => {
   });
 });
 
-// ✅ Route pour les statistiques générales (Inchangé)
 app.get('/api/admin/stats', protect, admin, getStats); 
-
-// ✅ Route pour les dernières commandes (Inchangé)
 app.get('/api/admin/latest-orders', protect, admin, getLatestOrders);
-
-// ⚙️ NOUVELLE ROUTE : Mise à jour du statut (Méthode PUT) (Inchangé)
 app.put('/api/admin/orders/:id/status', protect, admin, updateOrderStatus); 
 
 app.get('/api', (req, res) => {
@@ -104,12 +88,12 @@ app.get('/api', (req, res) => {
 });
 
 // ---------------------------------------------------
-// HANDLER GLOBAL (Inchangé)
+// HANDLER GLOBAL
 // ---------------------------------------------------
 app.use(errorHandler);
 
 // ---------------------------------------------------
-// CONNECTION MONGODB (Inchangé)
+// CONNECTION MONGODB
 // ---------------------------------------------------
 const connectDB = async () => {
   try {
@@ -122,7 +106,7 @@ const connectDB = async () => {
 };
 
 // ---------------------------------------------------
-// SERVEUR (Inchangé)
+// SERVEUR
 // ---------------------------------------------------
 const PORT = process.env.PORT || 5000;
 
@@ -137,7 +121,7 @@ connectDB().then(() => {
 });
 
 // ---------------------------------------------------
-// ERREURS NON GÉRÉES (Inchangé)
+// ERREURS NON GÉRÉES
 // ---------------------------------------------------
 process.on('unhandledRejection', (err) => {
   console.error('❌ Erreur non gérée:', err.message);
