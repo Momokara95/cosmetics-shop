@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
-// 🚨 AJOUT : Importation du module path pour les chemins absolus (bonne pratique)
+// 🚨 AJOUT : Importation du module path (bonne pratique)
 const path = require('path'); 
 require('dotenv').config();
 
@@ -13,7 +13,7 @@ const { protect, admin } = require('./middleware/auth');
 const authRoutes = require('./routes/authRoutes');
 const productRoutes = require('./routes/productRoutes');
 const orderRoutes = require('./routes/orderRoutes');
-// ➡️ NOUVEL IMPORT : La route pour l'upload permanent via Cloudinary
+// ✅ NOUVEL IMPORT : La route pour l'upload permanent via Cloudinary
 const uploadRoutes = require('./routes/uploadRoutes'); 
 
 const { getStats, getLatestOrders, updateOrderStatus } = require('./controllers/adminController'); 
@@ -26,23 +26,21 @@ const app = express();
 app.use(helmet());
 
 // ---------------------------------------------------
-// CORS
+// CORS (SOLUTION ROBUSTE CONTRE LE BLOCAGE)
 // ---------------------------------------------------
 const allowedOrigins = [
   'http://localhost:3000',
   'http://127.0.0.1:3000',
-  'https://cosmetics-shop-nine.vercel.app', // 🔥 FRONT VERCEL
+  'https://cosmetics-shop-nine.vercel.app', // 🔥 VOTRE FRONT VERCEL
 ];
 
 app.use(
   cors({
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-      return callback(null, false);
-    },
+    origin: allowedOrigins, // Utilisation du tableau direct pour la robustesse
     credentials: true,
+    // Précision des méthodes et headers pour les requêtes OPTIONS (Preflight)
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], 
+    allowedHeaders: ['Content-Type', 'Authorization'],
   })
 );
 
@@ -65,24 +63,19 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // ---------------------------------------------------
-// FICHIERS STATIQUES (MODIFIÉ)
+// FICHIERS STATIQUES (Supprimé car Cloudinary gère l'hébergement)
 // ---------------------------------------------------
-// ❌ ANCIEN : app.use('/uploads', express.static('uploads'));
-// Cette ligne n'est plus nécessaire car les images sont gérées par Cloudinary.
-// Si vous voulez conserver la possibilité d'uploader localement pour le DEV, utilisez :
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-// Mais en PROD sur Railway, cette ligne ne sert à rien sans stockage permanent.
-// Je la laisse commentée pour l'instant pour ne pas générer de confusion :
-// app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); 
+// (La ligne précédente a été supprimée ou commentée car elle n'est plus utile avec Cloudinary)
 
 
 // ---------------------------------------------------
-// ROUTES API (MODIFIÉ)
+// ROUTES API
 // ---------------------------------------------------
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
-app.use('/api/upload', uploadRoutes); // ✅ NOUVELLE ROUTE D'UPLOAD CLOUDINARY
+app.use('/api/upload', uploadRoutes); // ✅ ROUTE D'UPLOAD CLOUDINARY ACTIVÉE
 
 // Exemple de route admin protégée (Inchangé)
 app.get('/api/admin/add-product', protect, admin, (req, res) => {
