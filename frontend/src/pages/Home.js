@@ -1,209 +1,288 @@
-import React, { useState, useEffect } from "react";
-// ✅ CORRECTIONS : Importations obligatoires pour axios, Helmet, Link et Slider
-import axios from 'axios'; 
-import { Helmet } from 'react-helmet-async';
-import { Link } from 'react-router-dom';
-import Slider from 'react-slick'; 
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
-// ------------------------------------
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
+import axios from "axios";
+import Slider from "react-slick";
+import { FaSpa, FaTruck, FaLock, FaLeaf, FaHeart, FaStar } from "react-icons/fa";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 import "./Home.css";
 
-// ⚙️ Définition de sliderSettings (Correction de l'erreur 'is not defined')
-const sliderSettings = {
-    dots: true,
-    infinite: true, 
-    speed: 500,
-    slidesToShow: 4,
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 3000,
-    responsive: [
-        { breakpoint: 1024, settings: { slidesToShow: 3, slidesToScroll: 1 } },
-        { breakpoint: 768, settings: { slidesToShow: 2, slidesToScroll: 1 } },
-        { breakpoint: 480, settings: { slidesToShow: 1, slidesToScroll: 1 } },
-    ]
-};
-
-// Fonction utilitaire pour obtenir l'URL de la première image de manière sécurisée
-const getProductImageUrl = (product) => {
-    // Utilise l'opérateur de chaînage optionnel (?.) pour accéder à la première image.
-    // Si la structure est correcte, retourne l'URL.
-    if (product.images?.[0]?.url) {
-        return product.images[0].url;
-    }
-    // Retourne une image par défaut si aucune image n'est trouvée.
-    return "https://dummyimage.com/600x400/ccc/000.png&text=Image+Non+Disponible";
-};
-
 const Home = () => {
-    // Initialisation des états à un tableau vide []
-    const [featuredProducts, setFeaturedProducts] = useState([]);
-    const [bestSellers, setBestSellers] = useState([]);
-    const [loading, setLoading] = useState(true);
+    // ➡️ CORRECTION 1 : Initialisation des états à un tableau vide [] pour éviter .map() sur undefined
+    const [featuredProducts, setFeaturedProducts] = useState([]);
+    const [bestSellers, setBestSellers] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const fetchFeaturedProducts = async () => {
-            try {
-              const { data } = await axios.get(
-                    "https://cosmetics-shop-production.up.railway.app/api/products/featured"
-                );
-              setFeaturedProducts(data.data || []);
-            } catch (error) {
-              console.error("Erreur récupération produits vedette:", error);
-            }
-        };
+    useEffect(() => {
+        const fetchFeaturedProducts = async () => {
+            try {
+              const { data } = await axios.get(
+                    "https://cosmetics-shop-production.up.railway.app/api/products/featured"
+                );
+              setFeaturedProducts(data.data || []); // Assurez-vous d'utiliser un tableau si data.data est undefined
+            } catch (error) {
+              console.error("Erreur récupération produits vedette:", error);
+            }
+        };
 
-        const fetchBestSellers = async () => {
-            try {
-              const { data } = await axios.get(
-                    "https://cosmetics-shop-production.up.railway.app/api/products/best-sellers"
-                );
-              setBestSellers(data.data || []);
-            } catch (error) {
-              console.error("Erreur récupération meilleurs vendeurs:", error);
-            } finally {
-              setLoading(false);
-            }
-        };
+        const fetchBestSellers = async () => {
+            try {
+              const { data } = await axios.get(
+                    "https://cosmetics-shop-production.up.railway.app/api/products/best-sellers"
+                );
+              setBestSellers(data.data || []); // Assurez-vous d'utiliser un tableau
+            } catch (error) {
+              console.error("Erreur récupération meilleurs vendeurs:", error);
+            } finally {
+              setLoading(false);
+            }
+        };
 
+        // Utilisation de Promise.all pour exécuter les deux fetch en parallèle (optimisation)
         Promise.all([fetchFeaturedProducts(), fetchBestSellers()])
             .catch(err => {
                 console.error("Erreur globale de chargement :", err);
                 setLoading(false);
             });
 
-    }, []);
+    }, []);
 
-    if (loading) {
-        return <p style={{ textAlign: "center", padding: "100px 0" }}>Chargement des produits...</p>;
-    }
+    const sliderSettings = {
+        dots: true,
+        infinite: true,
+        speed: 600,
+        slidesToShow: 4,
+        slidesToScroll: 1,
+        autoplay: true,
+        autoplaySpeed: 3000,
+        responsive: [
+            { breakpoint: 1024, settings: { slidesToShow: 3 } },
+            { breakpoint: 768, settings: { slidesToShow: 2 } },
+            { breakpoint: 480, settings: { slidesToShow: 1 } },
+        ],
+    };
 
+    return (
+        <>
+            <Helmet>
+              <title>BeautéShop - Accueil</title>
+            </Helmet>
 
-    return (
-        <>
-            <Helmet>
-              <title>BeautéShop - Accueil</title>
-            </Helmet>
+            <div className="home-container">
 
-            <div className="home-container">
+              {/* HERO */}
+              <section className="hero">
+                <img
+                    src="https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9"
+                    alt="Bannière"
+                    className="hero-bg"
+                />
+                <div className="hero-overlay"></div>
+                <div className="hero-content">
+                    <h1>Révélez Votre Beauté Naturelle</h1>
+                    <p>Des soins élégants pour sublimer votre peau</p>
+                    <Link to="/products" className="cta-button">
+                        Voir les produits
+                    </Link>
+                </div>
+              </section>
 
-              {/* 🎁 HERO SECTION (Contenu restauré) */}
-              <section className="hero-section">
-                <h1>Découvrez les essentiels beauté du moment</h1>
-                <p>Jusqu'à 40% de réduction sur une sélection d'articles.</p>
-                <Link to="/products" className="btn-shop-now">Acheter maintenant</Link>
-              </section>
+              {/* CATEGORIES */}
+              <section className="categories">
+                  <h2>Nos Catégories</h2>
+                  <div className="category-grid">
+                      <Link to="/products?category=visage" className="category-card">
+                        <FaSpa className="icon" />
+                        <h3>Soins Visage</h3>
+                      </Link>
+                      <Link to="/products?category=corps" className="category-card">
+                        <FaHeart className="icon" />
+                        <h3>Soins Corps</h3>
+                      </Link>
+                      <Link to="/products?category=cheveux" className="category-card">
+                        <FaLeaf className="icon" />
+                        <h3>Soins Cheveux</h3>
+                      </Link>
+                      <Link to="/products?category=maquillage" className="category-card">
+                        <FaHeart className="icon" />
+                        <h3>Maquillage</h3>
+                      </Link>
+                  </div>
+              </section>
 
-              {/* 🛍️ CATEGORIES (Contenu restauré) */}
-              <section className="categories-preview">
-                <h2>Nos Catégories</h2>
-                <div className="category-grid">
-                    <div className="category-card"><Link to="/category/visage">Soins Visage</Link></div>
-                    <div className="category-card"><Link to="/category/corps">Soins Corps</Link></div>
-                    <div className="category-card"><Link to="/category/maquillage">Maquillage</Link></div>
-                </div>
-              </section>
+              {/* FEATURED PRODUCTS */}
+              <section className="featured-products">
+                  <h2>Nouveautés</h2>
+                  {loading ? (
+                      <p style={{ textAlign: "center" }}>Chargement...</p>
+                  ) : (
+                      <Slider {...sliderSettings} className="product-slider">
+                        {featuredProducts.map((product) => (
+                          <div key={product._id} className="product-card">
+                            <Link to={`/products/${product.slug}`}>
+                              <div className="product-img-container">
+                                  {product.images?.[0]?.url ? (
+                                  <img
+                                    src={product.images[0].url}
+                                    alt={product.name}
+                                    className="product-img"
+                                  />
+                                  ) : (
+                                  <div className="no-image">Pas d'image</div>
+                                  )}
+                              </div>
+                              <div className="product-info">
+                                <h3>{product.name}</h3>
+                                <p className="product-brand">{product.brand}</p>
+                                <div className="product-price">
+                                  <span>{product.price}€</span>
+                                  {product.compareAtPrice && (
+                                    <span className="old-price">{product.compareAtPrice}€</span>
+                                  )}
+                                </div>
+                              </div>
+                            </Link>
+                          </div>
+                        ))}
+                      </Slider>
+                  )}
+              </section>
 
-              {/* FEATURED PRODUCTS */}
-              <section className="featured-products">
-                  <h2>Nouveautés</h2>
-                  {featuredProducts.length === 0 ? (
-                      <p style={{ textAlign: "center" }}>Aucun nouveau produit à afficher.</p>
-                  ) : (
-                      <Slider {...sliderSettings} className="product-slider">
-                        {featuredProducts.map((product) => (
-                          <div key={product._id} className="product-card">
-                            <Link to={`/products/${product.slug}`}>
-                              <div className="product-img-container">
-                                  {/* 🎯 Utilisation de la fonction d'aide */}
-                                  <img
-                                    src={getProductImageUrl(product)} 
-                                    alt={product.name}
-                                    className="product-img"
-                                  />
-                              </div>
-                              <div className="product-info">
-                                <h3>{product.name}</h3>
-                                <p className="product-brand">{product.brand}</p>
-                                <div className="product-price">
-                                  <span>{product.price}€</span>
-                                  {product.compareAtPrice && (
-                                    <span className="old-price">{product.compareAtPrice}€</span>
-                                  )}
-                                </div>
-                              </div>
-                            </Link>
-                          </div>
-                        ))}
-                      </Slider>
-                  )}
-              </section>
+              {/* 🟣 BEST SELLERS */}
+              <section className="best-sellers">
+                  <h2>Meilleures Ventes</h2>
+                  <div className="best-sellers-grid">
+                      {bestSellers.map((product) => (
+                        <Link
+                          to={`/products/${product.slug}`}
+                          key={product._id}
+                          className="best-item"
+                        >
+                            {/* ➡️ CORRECTION 2 : Ajout de la vérification optionnelle pour 'images[0].url' */}
+                          {product.images?.[0]?.url ? (
+                            <img src={product.images[0].url} alt={product.name} />
+                          ) : (
+                                <div className="no-image">Pas d'image</div>
+                            )}
+                            
+                          <h3>{product.name}</h3>
+                          <p>{product.price}€</p>
+                        </Link>
+                      ))}
+                  </div>
+              </section>
 
-              {/* 🟣 BEST SELLERS */}
-              <section className="best-sellers">
-                  <h2>Meilleures Ventes</h2>
-                  {bestSellers.length === 0 ? (
-                      <p style={{ textAlign: "center" }}>Aucun meilleur vendeur à afficher.</p>
-                  ) : (
-                      <div className="best-sellers-grid">
-                        {bestSellers.map((product) => (
-                          <Link
-                            to={`/products/${product.slug}`}
-                            key={product._id}
-                            className="best-item"
-                          >
-                              {/* 🎯 Utilisation de la fonction d'aide */}
-                              <img src={getProductImageUrl(product)} alt={product.name} />
-                              
-                            <h3>{product.name}</h3>
-                            <p>{product.price}€</p>
-                          </Link>
-                        ))}
-                      </div>
-                  )}
-              </section>
+              {/* ⭐ CUSTOMER REVIEWS */}
+              <section className="reviews">
+                  <h2>Avis Clients</h2>
+                  <div className="reviews-grid">
 
-              {/* ⭐ CUSTOMER REVIEWS (Contenu restauré) */}
-              <section className="customer-reviews">
-                <h2>Ce que nos clients disent</h2>
-                <div className="review-box">
-                    <p>"Produits incroyables et livraison rapide !" - Julie D.</p>
-                </div>
-              </section>
+                      <div className="review-card">
+                        <FaStar className="star" /><FaStar className="star" /><FaStar className="star" /><FaStar className="star" /><FaStar className="star" />
+                        <p>“Produits exceptionnel ! Ma peau est beaucoup plus douce.”</p>
+                        <h4>- Aïcha</h4>
+                      </div>
 
-              {/* 📰 BEAUTY BLOG (Contenu restauré) */}
-              <section className="beauty-blog">
-                <h2>Notre Blog Beauté</h2>
-                <Link to="/blog/dernier-article">Lire le dernier article : Les tendances de l'hiver</Link>
-              </section>
+                      <div className="review-card">
+                        <FaStar className="star" /><FaStar className="star" /><FaStar className="star" /><FaStar className="star" />
+                        <p>“Livraison rapide et service client au top.”</p>
+                        <h4>- Mariama</h4>
+                      </div>
 
-              {/* ✉️ NEWSLETTER (Contenu restauré) */}
-              <section className="newsletter-signup">
-                <h2>Abonnez-vous à notre Newsletter</h2>
-                <p>Recevez 10% de réduction sur votre première commande.</p>
-                <form><input type="email" placeholder="Votre email" /></form>
-              </section>
+                      <div className="review-card">
+                        <FaStar className="star" /><FaStar className="star" /><FaStar className="star" /><FaStar className="star" /><FaStar className="star" />
+                        <p>“Les meilleurs produits naturels que j’ai testés.”</p>
+                        <h4>- Fatou</h4>
+                      </div>
 
-              {/* BRANDS (Contenu restauré) */}
-              <section className="brands-logos">
-                <h2>Nos Marques Partenaires</h2>
-                <div className="logo-placeholder">Logo A, Logo B, Logo C</div>
-              </section>
+                  </div>
+              </section>
 
-              {/* Benefits (Contenu restauré) */}
-              <section className="benefits-strip">
-                <p>Livraison rapide | Paiement sécurisé | Retours faciles</p>
-              </section>
+              {/* 📰 BEAUTY BLOG */}
+              <section className="blog-section">
+                  <h2>Conseils Beauté</h2>
+                  <div className="blog-grid">
+                      <div className="blog-card">
+                        <img src="https://images.unsplash.com/photo-1515378791036-0648a3ef77b2" alt="" />
+                        <h3>Comment avoir une peau parfaite ?</h3>
+                        <p>Découvrez les secrets d’une routine simple et efficace.</p>
+                      </div>
 
-              {/* FOOTER (Contenu restauré) */}
-              <footer className="site-footer">
-                <p>&copy; 2025 BeautéShop. Tous droits réservés.</p>
-              </footer>
+                      <div className="blog-card">
+                        <img src="https://images.unsplash.com/photo-1522337660859-02fbefca4702" alt="" />
+                        <h3>Top 5 des masques naturels</h3>
+                        <p>Des recettes maison à base d’ingrédients naturels.</p>
+                      </div>
 
-            </div>
-        </>
-    );
+                      <div className="blog-card">
+                        <img src="https://images.unsplash.com/photo-1563225409-d6f6f1f6e6c9" alt="" />
+                        <h3>Maquillage : tendances 2025</h3>
+                        <p>Découvrez les looks les plus tendances du moment.</p>
+                      </div>
+                  </div>
+              </section>
+
+              {/* ✉️ NEWSLETTER */}
+              <section className="newsletter">
+                  <h2>Restez informé</h2>
+                  <p>Recevez nos nouveautés et promotions exclusives.</p>
+                  <form className="newsletter-form">
+                      <input type="email" placeholder="Votre email" />
+                      <button type="submit">S'inscrire</button>
+                  </form>
+              </section>
+
+              {/* BRANDS */}
+              <section className="brands">
+                  <h2>Nos Marques</h2>
+                  <div className="brands-row">
+                      <img src="https://dummyimage.com/120x50/ccc/000.png&text=Brand+1" alt="" />
+                      <img src="https://dummyimage.com/120x50/ccc/000.png&text=Brand+2" alt="" />
+                      <img src="https://dummyimage.com/120x50/ccc/000.png&text=Brand+3" alt="" />
+                      <img src="https://dummyimage.com/120x50/ccc/000.png&text=Brand+4" alt="" />
+                  </div>
+              </section>
+
+              {/* Benefits */}
+              <section className="benefits">
+                  <div className="benefit-card">
+                      <FaTruck className="icon" />
+                      <h3>Livraison Rapide</h3>
+                      <p>Sous 48h</p>
+                  </div>
+                  <div className="benefit-card">
+                      <FaLock className="icon" />
+                      <h3>Paiement Sécurisé</h3>
+                      <p>Protection totale</p>
+                  </div>
+                  <div className="benefit-card">
+                      <FaLeaf className="icon" />
+                      <h3>Éco-responsable</h3>
+                      <p>Formules clean</p>
+                  </div>
+                  <div className="benefit-card">
+                      <FaHeart className="icon" />
+                      <h3>Satisfait ou Remboursé</h3>
+                      <p>30 jours</p>
+                  </div>
+              </section>
+
+              {/* FOOTER */}
+              <footer className="footer">
+                  <div className="footer-content">
+                      <p>&copy; 2025 BeautéShop. Tous droits réservés.</p>
+                      <div className="footer-links">
+                        <Link to="/about">À propos</Link>
+                        <Link to="/contact">Contact</Link>
+                        <Link to="/terms">Conditions</Link>
+                      </div>
+                  </div>
+              </footer>
+
+            </div>
+        </>
+    );
 };
 
 export default Home;
