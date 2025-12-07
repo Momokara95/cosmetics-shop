@@ -4,15 +4,18 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
+// 🚨 AJOUT : Importation du module path pour les chemins absolus (bonne pratique)
+const path = require('path'); 
 require('dotenv').config();
 
 const errorHandler = require('./middleware/errorHandler');
-const { protect, admin } = require('./middleware/auth'); // <- import middleware auth
+const { protect, admin } = require('./middleware/auth'); 
 const authRoutes = require('./routes/authRoutes');
 const productRoutes = require('./routes/productRoutes');
 const orderRoutes = require('./routes/orderRoutes');
+// ➡️ NOUVEL IMPORT : La route pour l'upload permanent via Cloudinary
+const uploadRoutes = require('./routes/uploadRoutes'); 
 
-// ➡️ NOUVEAU : Importation du controller Admin (Incluant updateOrderStatus)
 const { getStats, getLatestOrders, updateOrderStatus } = require('./controllers/adminController'); 
 
 const app = express();
@@ -62,34 +65,42 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // ---------------------------------------------------
-// FICHIERS STATIQUES
+// FICHIERS STATIQUES (MODIFIÉ)
 // ---------------------------------------------------
-app.use('/uploads', express.static('uploads'));
+// ❌ ANCIEN : app.use('/uploads', express.static('uploads'));
+// Cette ligne n'est plus nécessaire car les images sont gérées par Cloudinary.
+// Si vous voulez conserver la possibilité d'uploader localement pour le DEV, utilisez :
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// Mais en PROD sur Railway, cette ligne ne sert à rien sans stockage permanent.
+// Je la laisse commentée pour l'instant pour ne pas générer de confusion :
+// app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 
 // ---------------------------------------------------
-// ROUTES API
+// ROUTES API (MODIFIÉ)
 // ---------------------------------------------------
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/upload', uploadRoutes); // ✅ NOUVELLE ROUTE D'UPLOAD CLOUDINARY
 
-// Exemple de route admin protégée (Peut rester ou être déplacée vers un controller si tu l'utilises)
+// Exemple de route admin protégée (Inchangé)
 app.get('/api/admin/add-product', protect, admin, (req, res) => {
   res.json({
     message: `✅ Bienvenue Admin ${req.user.name}`,
-    users: 120, // exemple statique, tu peux récupérer depuis DB
+    users: 120, 
     orders: 45,
     revenue: 12345.67
   });
 });
 
-// ✅ Route pour les statistiques générales
+// ✅ Route pour les statistiques générales (Inchangé)
 app.get('/api/admin/stats', protect, admin, getStats); 
 
-// ✅ Route pour les dernières commandes
+// ✅ Route pour les dernières commandes (Inchangé)
 app.get('/api/admin/latest-orders', protect, admin, getLatestOrders);
 
-// ⚙️ NOUVELLE ROUTE : Mise à jour du statut (Méthode PUT)
+// ⚙️ NOUVELLE ROUTE : Mise à jour du statut (Méthode PUT) (Inchangé)
 app.put('/api/admin/orders/:id/status', protect, admin, updateOrderStatus); 
 
 app.get('/api', (req, res) => {
@@ -100,12 +111,12 @@ app.get('/api', (req, res) => {
 });
 
 // ---------------------------------------------------
-// HANDLER GLOBAL
+// HANDLER GLOBAL (Inchangé)
 // ---------------------------------------------------
 app.use(errorHandler);
 
 // ---------------------------------------------------
-// CONNECTION MONGODB
+// CONNECTION MONGODB (Inchangé)
 // ---------------------------------------------------
 const connectDB = async () => {
   try {
@@ -118,7 +129,7 @@ const connectDB = async () => {
 };
 
 // ---------------------------------------------------
-// SERVEUR
+// SERVEUR (Inchangé)
 // ---------------------------------------------------
 const PORT = process.env.PORT || 5000;
 
@@ -133,7 +144,7 @@ connectDB().then(() => {
 });
 
 // ---------------------------------------------------
-// ERREURS NON GÉRÉES
+// ERREURS NON GÉRÉES (Inchangé)
 // ---------------------------------------------------
 process.on('unhandledRejection', (err) => {
   console.error('❌ Erreur non gérée:', err.message);
