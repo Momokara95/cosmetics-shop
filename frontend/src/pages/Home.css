@@ -1,392 +1,580 @@
-/* -----------------------------
-   GLOBAL
------------------------------- */
+/* --- 0. VARIABLES & RÉINITIALISATION GLOBALE --- */
+
+:root {
+    --primary-color: #6a1b9a; /* Violet élégant */
+    --secondary-color: #fce4ec; /* Rose clair */
+    --accent-color: #ff9800; /* Orange pour les prix/accents */
+    --text-dark: #333333;
+    --text-light: #f4f4f4;
+    --bg-light: #ffffff;
+    --bg-dark: #f9f9f9;
+    --border-color: #e0e0e0;
+    --radius: 8px;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* Réinitialisation de base pour la page */
 .home-container {
-  font-family: "Poppins", sans-serif;
-  color: #333;
-  overflow-x: hidden;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding-bottom: 4rem; /* Espace pour le footer */
 }
 
-h2 {
-  text-align: center;
-  font-size: 2rem;
-  margin: 40px 0 20px;
-  font-weight: 600;
+/* Styles pour toutes les sections principales */
+section {
+    padding: 4rem 2rem;
+    text-align: center;
 }
 
-a {
-  text-decoration: none;
-  color: inherit;
+section h2 {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    margin-bottom: 2.5rem;
+    font-weight: 700;
 }
 
-/* -----------------------------
-   HERO SECTION
------------------------------- */
+/* --- 1. HERO SECTION --- */
+
 .hero {
-  position: relative;
-  height: 70vh;
-  width: 100%;
-  overflow: hidden;
-  border-radius: 10px;
+    position: relative;
+    height: 60vh; /* Hauteur de l'écran */
+    min-height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-light);
+    overflow: hidden;
 }
 
 .hero-bg {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: brightness(70%);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
 }
 
 .hero-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4); /* Assombrir l'image */
+    z-index: 2;
 }
 
 .hero-content {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: #fff;
-  text-align: center;
+    position: relative;
+    z-index: 3;
+    max-width: 800px;
 }
 
 .hero-content h1 {
-  font-size: 3rem;
-  margin-bottom: 10px;
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+    font-weight: 900;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.hero-content p {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+    font-weight: 300;
 }
 
 .cta-button {
-  margin-top: 15px;
-  padding: 12px 30px;
-  background: #ff5fa2;
-  color: #fff;
-  border-radius: 50px;
-  font-size: 1rem;
-  transition: 0.3s;
+    display: inline-block;
+    padding: 1rem 2rem;
+    background-color: var(--primary-color);
+    color: var(--text-light);
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 50px;
+    transition: background-color 0.3s, transform 0.3s;
+    font-size: 1.1rem;
 }
 
 .cta-button:hover {
-  background: #ff3f8b;
+    background-color: #8b3abf; /* Teinte plus claire */
+    transform: translateY(-2px);
 }
 
-/* -----------------------------
-   CATEGORIES
------------------------------- */
+/* --- 2. CATEGORIES SECTION --- */
+
 .categories {
-  padding: 40px 0;
+    background-color: var(--bg-dark);
 }
 
 .category-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 20px;
-  padding: 0 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 .category-card {
-  background: #fff;
-  padding: 20px;
-  text-align: center;
-  border-radius: 12px;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.07);
-  transition: 0.3s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem;
+    background-color: var(--bg-light);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    text-decoration: none;
+    color: var(--text-dark);
+    transition: transform 0.3s, box-shadow 0.3s;
 }
 
 .category-card:hover {
-  transform: translateY(-5px);
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
 
 .category-card .icon {
-  font-size: 2.5rem;
-  color: #ff5fa2;
+    font-size: 3rem;
+    color: var(--primary-color);
+    margin-bottom: 0.8rem;
 }
 
 .category-card h3 {
-  margin-top: 10px;
-  font-size: 1.2rem;
+    font-size: 1.2rem;
+    font-weight: 600;
 }
 
-/* -----------------------------
-   FEATURED PRODUCTS
------------------------------- */
+/* --- 3. FEATURED PRODUCTS (SLIDER) --- */
+
 .featured-products {
-  padding: 40px 0;
+    background-color: var(--bg-light);
 }
 
+/* Styles pour les flèches du carrousel */
+.slick-prev:before, .slick-next:before {
+    color: var(--primary-color) !important;
+    font-size: 30px !important;
+}
+
+/* Centrer le conteneur du carrousel */
 .product-slider {
-  padding: 0 30px;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
+/* Style de la carte produit dans le carrousel */
 .product-card {
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.07);
-  overflow: hidden;
-  transition: 0.3s;
+    padding: 15px; /* Espace autour de chaque élément dans le slider */
+    outline: none;
 }
 
-.product-card:hover {
-  transform: translateY(-6px);
+.product-card a {
+    display: block;
+    text-decoration: none;
+    color: var(--text-dark);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: box-shadow 0.3s;
+}
+
+.product-card a:hover {
+    box-shadow: var(--shadow);
 }
 
 .product-img-container {
-  width: 100%;
-  height: 230px;
-  overflow: hidden;
-  background: #f4f4f4;
+    height: 250px;
+    overflow: hidden;
+    background-color: var(--bg-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .product-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s;
+}
+
+.product-card a:hover .product-img {
+    transform: scale(1.05);
+}
+
+.no-image {
+    color: #999;
+    font-style: italic;
 }
 
 .product-info {
-  padding: 15px;
+    padding: 1rem;
+    text-align: left;
+}
+
+.product-info h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+    color: var(--text-dark);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .product-brand {
-  color: #777;
-  font-size: 0.9rem;
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 0.5rem;
 }
 
 .product-price {
-  margin-top: 10px;
-  font-weight: bold;
-  color: #ff5fa2;
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
 }
 
 .old-price {
-  margin-left: 10px;
-  text-decoration: line-through;
-  color: #999;
+    font-size: 0.9rem;
+    color: #999;
+    text-decoration: line-through;
+    margin-left: 0.8rem;
+    font-weight: normal;
 }
 
-/* -----------------------------
-   BEST SELLERS
------------------------------- */
+
+/* --- 4. BEST SELLERS --- */
+
 .best-sellers {
-  padding: 40px;
-  background: #fafafa;
+    background-color: var(--secondary-color);
 }
 
 .best-sellers-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-  gap: 25px;
-  padding: 0 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 .best-item {
-  background: #fff;
-  border-radius: 12px;
-  padding: 15px;
-  text-align: center;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.07);
-  transition: 0.3s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: var(--text-dark);
+    padding: 1rem;
+    background: var(--bg-light);
+    border-radius: var(--radius);
+    transition: transform 0.3s;
 }
 
 .best-item:hover {
-  transform: translateY(-5px);
+    transform: translateY(-5px);
+    box-shadow: var(--shadow);
 }
 
 .best-item img {
-  width: 100%;
-  height: 160px;
-  object-fit: cover;
-  border-radius: 8px;
+    width: 100%;
+    max-height: 200px;
+    object-fit: cover;
+    border-radius: var(--radius);
+    margin-bottom: 1rem;
 }
 
 .best-item h3 {
-  margin: 10px 0 5px;
-  font-size: 1.1rem;
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
 }
 
-/* -----------------------------
-   REVIEWS
------------------------------- */
+.best-item p {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+/* --- 5. REVIEWS SECTION --- */
+
 .reviews {
-  padding: 50px 0;
-  background: #fff;
+    background-color: var(--bg-light);
 }
 
 .reviews-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 25px;
-  padding: 0 30px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 .review-card {
-  background: #fafafa;
-  padding: 20px;
-  border-radius: 12px;
-  text-align: center;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    padding: 1.5rem;
+    background-color: var(--bg-dark);
+    border-left: 4px solid var(--primary-color);
+    border-radius: var(--radius);
+    text-align: left;
+    box-shadow: var(--shadow);
 }
 
-.star {
-  color: #ffc107;
-  margin: 3px;
+.review-card .star {
+    color: var(--accent-color);
+    font-size: 1.1rem;
+    margin-right: 0.2rem;
+    margin-bottom: 0.8rem;
 }
 
 .review-card p {
-  margin: 10px 0;
-  color: #555;
+    font-style: italic;
+    margin-bottom: 1rem;
+    color: var(--text-dark);
 }
 
-/* -----------------------------
-   BLOG
------------------------------- */
+.review-card h4 {
+    font-weight: 600;
+    color: #666;
+    text-align: right;
+}
+
+/* --- 6. BLOG SECTION --- */
+
 .blog-section {
-  padding: 50px 0;
+    background-color: var(--bg-dark);
 }
 
 .blog-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 25px;
-  padding: 0 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 .blog-card {
-  background: #fff;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-  transition: 0.3s;
+    background: var(--bg-light);
+    border-radius: var(--radius);
+    overflow: hidden;
+    text-align: left;
+    box-shadow: var(--shadow);
+    transition: transform 0.3s;
 }
 
 .blog-card:hover {
-  transform: translateY(-5px);
+    transform: translateY(-5px);
 }
 
 .blog-card img {
-  width: 100%;
-  height: 170px;
-  object-fit: cover;
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
 }
 
 .blog-card h3 {
-  font-size: 1.3rem;
-  padding: 15px;
+    font-size: 1.3rem;
+    color: var(--text-dark);
+    padding: 0 1rem;
+    margin-top: 1rem;
 }
 
 .blog-card p {
-  padding: 0 15px 20px;
-  color: #666;
+    padding: 0 1rem 1.5rem;
+    color: #666;
 }
 
-/* -----------------------------
-   NEWSLETTER
------------------------------- */
+/* --- 7. NEWSLETTER --- */
+
 .newsletter {
-  padding: 60px 20px;
-  background: #ff5fa2;
-  color: white;
-  text-align: center;
+    background-color: var(--primary-color);
+    color: var(--text-light);
+    padding: 3rem 2rem;
+}
+
+.newsletter h2 {
+    color: var(--text-light);
+}
+
+.newsletter p {
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
 }
 
 .newsletter-form {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    max-width: 600px;
+    margin: 0 auto;
+    gap: 10px;
 }
 
-.newsletter-form input {
-  padding: 12px;
-  width: 280px;
-  border: none;
-  border-radius: 30px 0 0 30px;
+.newsletter-form input[type="email"] {
+    flex-grow: 1;
+    padding: 0.75rem 1rem;
+    border: none;
+    border-radius: 50px;
+    font-size: 1rem;
 }
 
 .newsletter-form button {
-  padding: 12px 25px;
-  border: none;
-  background: #fff;
-  color: #ff5fa2;
-  font-weight: bold;
-  border-radius: 0 30px 30px 0;
-  cursor: pointer;
-  transition: 0.3s;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--accent-color);
+    color: var(--text-light);
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
 }
 
 .newsletter-form button:hover {
-  background: #ffe7f0;
+    background-color: #e68900;
 }
 
-/* -----------------------------
-   BRANDS
------------------------------- */
+/* --- 8. BRANDS & BENEFITS --- */
+
 .brands {
-  padding: 40px 0;
-  text-align: center;
+    background-color: var(--bg-light);
 }
 
 .brands-row {
-  display: flex;
-  justify-content: center;
-  gap: 40px;
-  flex-wrap: wrap;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    max-width: 1000px;
+    margin: 0 auto;
 }
 
 .brands-row img {
-  filter: grayscale(100%);
-  opacity: 0.8;
-  transition: 0.3s;
+    opacity: 0.7;
+    filter: grayscale(100%);
+    transition: opacity 0.3s, filter 0.3s;
+    height: 50px; /* Taille fixe pour les logos */
+    width: auto;
 }
 
 .brands-row img:hover {
-  filter: grayscale(0);
-  opacity: 1;
+    opacity: 1;
+    filter: grayscale(0%);
 }
 
-/* -----------------------------
-   BENEFITS
------------------------------- */
 .benefits {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 20px;
-  padding: 40px 20px;
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    padding: 3rem 2rem;
+    background-color: var(--secondary-color);
 }
 
 .benefit-card {
-  background: #fff;
-  padding: 25px;
-  text-align: center;
-  border-radius: 12px;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.07);
+    max-width: 250px;
+    text-align: center;
 }
 
 .benefit-card .icon {
-  font-size: 2rem;
-  color: #ff5fa2;
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
 }
 
-/* -----------------------------
-   FOOTER
------------------------------- */
+.benefit-card h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+}
+
+.benefit-card p {
+    color: #666;
+}
+
+/* --- 9. FOOTER --- */
+
 .footer {
-  background: #333;
-  color: #fff;
-  padding: 30px 20px;
-  margin-top: 40px;
+    background-color: var(--text-dark);
+    color: var(--text-light);
+    padding: 1.5rem 2rem;
+    text-align: center;
 }
 
 .footer-content {
-  text-align: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.footer p {
+    font-size: 0.9rem;
+    margin: 0.5rem 0;
 }
 
 .footer-links a {
-  color: #fff;
-  margin: 0 10px;
-  transition: 0.3s;
+    color: var(--text-light);
+    text-decoration: none;
+    margin-left: 1rem;
+    font-size: 0.9rem;
+    transition: color 0.3s;
 }
 
 .footer-links a:hover {
-  color: #ff5fa2;
+    color: var(--accent-color);
+}
+
+
+/* --- 10. RESPONSIVE DESIGN --- */
+
+/* Tablette (768px et moins) */
+@media (max-width: 1024px) {
+    .hero-content h1 {
+        font-size: 3rem;
+    }
+    .hero-content p {
+        font-size: 1.3rem;
+    }
+    .footer-content {
+        flex-direction: column;
+    }
+    .footer-links {
+        margin-top: 1rem;
+    }
+    .footer-links a {
+        margin: 0 0.5rem;
+    }
+}
+
+/* Mobile (480px et moins) */
+@media (max-width: 768px) {
+    section {
+        padding: 3rem 1rem;
+    }
+    section h2 {
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+    }
+    .hero {
+        height: 50vh;
+    }
+    .hero-content h1 {
+        font-size: 2rem;
+    }
+    .hero-content p {
+        font-size: 1.1rem;
+    }
+    .cta-button {
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
+    }
+    /* Newsletter empilée */
+    .newsletter-form {
+        flex-direction: column;
+    }
+    .newsletter-form input, .newsletter-form button {
+        border-radius: var(--radius);
+    }
+    /* Les grilles gèrent l'adaptation grâce à auto-fit/minmax */
 }
