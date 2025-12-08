@@ -19,26 +19,25 @@ const ProductDetail = () => {
 
   useEffect(() => {
     const fetchProduct = async () => {
-        // 🛑 CORRECTION MAJEURE : On vérifie que le slug existe avant de faire la requête
-        if (!slug || slug === 'undefined') {
-            setLoading(false);
-            // On pourrait choisir de rediriger ici, mais on laisse le composant afficher "Produit non trouvé"
-            return; 
-        }
+        // 🛑 CORRECTION 1 : Vérifie la présence du slug avant l'appel API (évite l'erreur 404 /products/undefined)
+        if (!slug || slug === 'undefined') {
+            setLoading(false);
+            return; 
+        }
 
         try {
           const { data } = await axios.get(`https://cosmetics-shop-production.up.railway.app/api/products/${slug}`);
           setProduct(data.data);
         } catch (error) {
           console.error('Erreur:', error);
-          setProduct(null); // Assure l'affichage du message "Produit non trouvé" en cas d'erreur 404
+          setProduct(null); 
         } finally {
           setLoading(false);
         }
     };
 
     fetchProduct();
-  }, [slug]); // Dépendance uniquement au slug est suffisante
+  }, [slug]); 
 
   const handleAddToCart = () => {
     addToCart(product, quantity);
@@ -70,8 +69,17 @@ const ProductDetail = () => {
       <Helmet>
         <title>{product.name} - BeautéShop</title>
         <meta name="description" content={product.description} />
+        
+        {/* 🛑 CORRECTION 2 : Filtre pour garantir que 'seoKeywords' ne contient que des strings (évite TypeError: ...toLowerCase) */}
         {product.seoKeywords && product.seoKeywords.length > 0 && (
-          <meta name="keywords" content={product.seoKeywords.join(', ')} />
+          <meta 
+                name="keywords" 
+                content={
+                    product.seoKeywords
+                    .filter(keyword => typeof keyword === 'string') 
+                    .join(', ')
+                } 
+            />
         )}
         
         {/* Open Graph */}
