@@ -18,6 +18,11 @@ const { getStats, getLatestOrders, updateOrderStatus } = require('./controllers/
 
 const app = express();
 
+// 🚀 CORRECTION : DIT À EXPRESS DE FAIRE CONFIANCE AUX PROXIES (Comme Railway)
+// Ceci est ESSENTIEL pour express-rate-limit afin de lire l'IP réelle via X-Forwarded-For
+// et corrige le "ValidationError: The 'X-Forwarded-For' header is set..."
+app.set('trust proxy', true);
+
 // ---------------------------------------------------
 // SÉCURITÉ
 // ---------------------------------------------------
@@ -36,7 +41,7 @@ app.use(
   cors({
     origin: allowedOrigins,
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Essentiel pour le Preflight
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Essentiel pour le Preflight
     allowedHeaders: ['Content-Type', 'Authorization'], // Essentiel pour le Login
   })
 );
