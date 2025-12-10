@@ -2,19 +2,22 @@ const Product = require('../models/Product');
 const mongoose = require('mongoose'); 
 
 // ---------------------------------------------------
-// 💡 Fonctions PUBLIQUES
+// 💡 Fonctions PUBLIQUES (Définies en tant que CONST)
 // ---------------------------------------------------
 
-// @desc    Récupère tous les produits avec filtres et pagination (PUBLIC)
-// @route   GET /api/products
-// @access  Public
-exports.getProducts = async (req, res) => {
+/**
+ * @desc    Récupère tous les produits avec filtres et pagination (PUBLIC)
+ * @route   GET /api/products
+ * @access  Public
+ */
+const getProducts = async (req, res) => { // CHANGEMENT: De exports.getProducts à const getProducts
   try {
-    // ... (Logique inchangée pour les produits publics) ...
+    // Filtres et pagination
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 12;
     const skip = (page - 1) * limit;
 
+    // Construire les filtres
     let queryObj = { isActive: true };
 
     if (req.query.category) {
@@ -35,6 +38,7 @@ exports.getProducts = async (req, res) => {
       if (req.query.maxPrice) queryObj.price.$lte = parseFloat(req.query.maxPrice);
     }
 
+    // Tri
     let sortOption = {};
     if (req.query.sort === 'price_asc') sortOption.price = 1;
     else if (req.query.sort === 'price_desc') sortOption.price = -1;
@@ -66,10 +70,12 @@ exports.getProducts = async (req, res) => {
   }
 };
 
-// @desc    Récupère un produit par slug (PUBLIC)
-// @route   GET /api/products/:slug
-// @access  Public
-exports.getProduct = async (req, res) => {
+/**
+ * @desc    Récupère un produit par slug (PUBLIC)
+ * @route   GET /api/products/:slug
+ * @access  Public
+ */
+const getProduct = async (req, res) => { // CHANGEMENT: De exports.getProduct à const getProduct
   try {
     const product = await Product.findOne({ slug: req.params.slug });
     if (!product) {
@@ -82,10 +88,12 @@ exports.getProduct = async (req, res) => {
   }
 };
 
-// @desc    Récupère les produits en vedette (PUBLIC)
-// @route   GET /api/products/featured
-// @access  Public
-exports.getFeaturedProducts = async (req, res) => {
+/**
+ * @desc    Récupère les produits en vedette (PUBLIC)
+ * @route   GET /api/products/featured
+ * @access  Public
+ */
+const getFeaturedProducts = async (req, res) => { // CHANGEMENT: De exports.getFeaturedProducts à const getFeaturedProducts
     try {
         const products = await Product.find({ featured: true, isActive: true })
           .limit(8)
@@ -97,17 +105,15 @@ exports.getFeaturedProducts = async (req, res) => {
     }
 };
 
-// @desc    Récupérer les 8 meilleurs produits (PUBLIC)
-// @route   GET /api/products/best-sellers
-// @access  Public
-exports.getBestSellers = async (req, res, next) => {
+/**
+ * @desc    Récupérer les 8 meilleurs produits (PUBLIC)
+ * @route   GET /api/products/best-sellers
+ * @access  Public
+ */
+const getBestSellers = async (req, res, next) => { // CHANGEMENT: De exports.getBestSellers à const getBestSellers
     try {
-        // 
         const bestSellers = await Product.aggregate([
-            // 1. Optionnel : Filtrer les produits actifs
             { $match: { isActive: true } }, 
-
-            // 2. Jointure indirecte et calcul de la quantité vendue via $lookup avec pipeline
             {
                 $lookup: {
                     from: 'orders',
@@ -117,11 +123,9 @@ exports.getBestSellers = async (req, res, next) => {
                         { $match: { $expr: { $eq: ["$items.product", "$$productId"] } } },
                         { $project: { quantity: "$items.quantity" } }
                     ],
-                    as: 'sales' // Contient maintenant un tableau de toutes les quantités vendues
+                    as: 'sales' 
                 }
             },
-            
-            // 3. Calculer totalSold et projeter les champs nécessaires
             {
                 $project: {
                     _id: 1,
@@ -131,11 +135,7 @@ exports.getBestSellers = async (req, res, next) => {
                     totalSold: { $sum: "$sales.quantity" } 
                 }
             },
-            
-            // 4. Filtrer les produits qui ont été vendus
             { $match: { totalSold: { $gt: 0 } } },
-            
-            // 5. Trier et Limiter
             { $sort: { totalSold: -1 } },
             { $limit: 8 }
         ]);
@@ -153,164 +153,164 @@ exports.getBestSellers = async (req, res, next) => {
 
 
 // ---------------------------------------------------
-// 🛡️ Fonctions ADMIN (Gestion CRUD)
+// 🛡️ Fonctions ADMIN (Gestion CRUD - Définies en tant que CONST)
 // ---------------------------------------------------
 
 /**
- * @desc    Récupérer la liste complète des produits avec pagination et filtres (ADMIN)
- * @route   GET /api/products/admin
+ * @desc    Récupérer la liste complète des produits avec pagination et filtres (ADMIN)
+ * @route   GET /api/products/admin
+ * @access  Private/Admin
+ */
+const getAdminProducts = async (req, res) => { // CHANGEMENT: De exports.getAdminProducts à const getAdminProducts
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const isActiveFilter = req.query.isActive; 
+        
+        const skip = (page - 1) * limit;
+
+        let queryFilter = {};
+
+        if (isActiveFilter === 'true') {
+            queryFilter.isDeleted = { $ne: true }; 
+        } else if (isActiveFilter === 'false') {
+            queryFilter.isDeleted = true; 
+        } 
+
+        const keyword = req.query.keyword ? {
+            name: { $regex: req.query.keyword, $options: 'i' }
+        } : {};
+        
+        const finalFilter = { ...queryFilter, ...keyword };
+
+        const [products, totalItems] = await Promise.all([
+            Product.find(finalFilter)
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(limit)
+                .select('_id name price stock countInStock category isDeleted createdAt'), 
+
+            Product.countDocuments(finalFilter)
+        ]);
+
+        const totalPages = Math.ceil(totalItems / limit);
+
+        res.status(200).json({
+            data: {
+                products: products,
+                totalItems: totalItems,
+                totalPages: totalPages,
+                currentPage: page,
+                itemsPerPage: limit
+            }
+        });
+    } catch (error) {
+        console.error('❌ Erreur récupération produits ADMIN:', error);
+        res.status(500).json({ message: error.message || 'Erreur lors de la récupération des produits' });
+    }
+};
+
+
+/**
+ * @desc    Crée un nouveau produit (ADMIN)
+ * @route   POST /api/products/admin
  * @access  Private/Admin
  */
-exports.getAdminProducts = async (req, res) => {
-    try {
-        const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 10;
-        const isActiveFilter = req.query.isActive; // 'true', 'false', ou 'All'
-        
-        const skip = (page - 1) * limit;
+const createProduct = async (req, res) => { // CHANGEMENT: De exports.createProduct à const createProduct
+    try {
+        const product = new Product({
+            name: 'Nouveau Produit',
+            price: 0,
+            user: req.user._id, 
+            image: '/images/sample.jpg',
+            brand: 'Marque inconnue',
+            category: 'Catégorie inconnue',
+            countInStock: 0,
+            stock: 0,
+            description: 'Description par défaut...',
+            isDeleted: false 
+        });
 
-        let queryFilter = {};
-
-        // Filtrage par statut d'activité (basé sur le champ isDeleted de votre modèle)
-        if (isActiveFilter === 'true') {
-            queryFilter.isDeleted = { $ne: true }; // Actif
-        } else if (isActiveFilter === 'false') {
-            queryFilter.isDeleted = true; // Désactivé (soft-deleted)
-        } 
-        // Si 'All' ou non fourni, on ne filtre pas par isDeleted
-
-        // Recherche par nom
-        const keyword = req.query.keyword ? {
-            name: { $regex: req.query.keyword, $options: 'i' }
-        } : {};
-        
-        const finalFilter = { ...queryFilter, ...keyword };
-
-        const [products, totalItems] = await Promise.all([
-            Product.find(finalFilter)
-                .sort({ createdAt: -1 })
-                .skip(skip)
-                .limit(limit)
-                .select('_id name price stock countInStock category isDeleted createdAt'), 
-
-            Product.countDocuments(finalFilter)
-        ]);
-
-        const totalPages = Math.ceil(totalItems / limit);
-
-        res.status(200).json({
-            data: {
-                products: products,
-                totalItems: totalItems,
-                totalPages: totalPages,
-                currentPage: page,
-                itemsPerPage: limit
-            }
-        });
-    } catch (error) {
-        console.error('❌ Erreur récupération produits ADMIN:', error);
-        res.status(500).json({ message: error.message || 'Erreur lors de la récupération des produits' });
-    }
+        const createdProduct = await product.save();
+        res.status(201).json({ 
+            success: true,
+            message: "Produit par défaut créé",
+            data: createdProduct 
+        });
+    } catch (error) {
+        console.error('❌ Erreur création produit ADMIN:', error);
+        res.status(500).json({ success: false, message: error.message || 'Erreur lors de la création du produit' });
+    }
 };
 
+/**
+ * @desc    Met à jour un produit existant (ADMIN)
+ * @route   PUT /api/products/admin/:id
+ * @access  Private/Admin
+ */
+const updateProduct = async (req, res) => { // CHANGEMENT: De exports.updateProduct à const updateProduct
+    try {
+        const productId = req.params.id;
+        const updatedFields = req.body;
+        
+        if (updatedFields.countInStock !== undefined) {
+            updatedFields.stock = updatedFields.countInStock;
+        }
 
-// @desc    Crée un nouveau produit (ADMIN)
-// @route   POST /api/products/admin
-// @access  Private/Admin
-exports.createProduct = async (req, res) => {
-    try {
-        // Crée un produit par défaut minimal pour édition
-        const product = new Product({
-            name: 'Nouveau Produit',
-            price: 0,
-            user: req.user._id, // L'administrateur qui crée le produit
-            image: '/images/sample.jpg',
-            brand: 'Marque inconnue',
-            category: 'Catégorie inconnue',
-            countInStock: 0,
-            stock: 0,
-            description: 'Description par défaut...',
-            isDeleted: false // Par défaut, actif
-        });
+        const product = await Product.findByIdAndUpdate(
+            productId,
+            updatedFields,
+            { new: true, runValidators: true }
+        );
 
-        const createdProduct = await product.save();
-        res.status(201).json({ 
-            success: true,
-            message: "Produit par défaut créé",
-            data: createdProduct 
-        });
-    } catch (error) {
-        console.error('❌ Erreur création produit ADMIN:', error);
-        res.status(500).json({ success: false, message: error.message || 'Erreur lors de la création du produit' });
-    }
+        if (!product) {
+            return res.status(404).json({ success: false, message: 'Produit non trouvé.' });
+        }
+
+        res.status(200).json({ 
+            success: true,
+            message: `Produit ${productId} mis à jour.`,
+            data: product 
+        });
+    } catch (error) {
+        console.error('❌ Erreur mise à jour produit ADMIN:', error);
+        res.status(500).json({ success: false, message: error.message || 'Erreur lors de la mise à jour du produit' });
+    }
 };
 
-// @desc    Met à jour un produit existant (ADMIN)
-// @route   PUT /api/products/admin/:id
-// @access  Private/Admin
-exports.updateProduct = async (req, res) => {
-    try {
-        const productId = req.params.id;
-        const updatedFields = req.body;
-        
-        // Mettez à jour 'stock' si 'countInStock' est présent
-        if (updatedFields.countInStock !== undefined) {
-            updatedFields.stock = updatedFields.countInStock;
-        }
+/**
+ * @desc    Supprime un produit (Hard Delete) - Maintenu pour la complétude, mais souvent déconseillé.
+ * @route   DELETE /api/products/:id
+ * @access  Private/Admin
+ */
+const deleteProduct = async (req, res) => { // CHANGEMENT: De exports.deleteProduct à const deleteProduct
+    try {
+        const product = await Product.findByIdAndDelete(req.params.id);
 
-        const product = await Product.findByIdAndUpdate(
-            productId,
-            updatedFields,
-            { new: true, runValidators: true }
-        );
+        if (!product) {
+            return res.status(404).json({ success: false, message: 'Produit non trouvé' });
+        }
 
-        if (!product) {
-            return res.status(404).json({ success: false, message: 'Produit non trouvé.' });
-        }
-
-        res.status(200).json({ 
-            success: true,
-            message: `Produit ${productId} mis à jour.`,
-            data: product 
-        });
-    } catch (error) {
-        console.error('❌ Erreur mise à jour produit ADMIN:', error);
-        res.status(500).json({ success: false, message: error.message || 'Erreur lors de la mise à jour du produit' });
-    }
-};
-
-// @desc    Supprime un produit (Hard Delete) - Maintenu pour la complétude, mais souvent déconseillé.
-// @route   DELETE /api/products/:id
-// @access  Private/Admin
-// Note: Utilisez plutôt l'option isDeleted dans updateProduct pour une "soft delete"
-exports.deleteProduct = async (req, res) => {
-    try {
-        const product = await Product.findByIdAndDelete(req.params.id);
-
-        if (!product) {
-            return res.status(404).json({ success: false, message: 'Produit non trouvé' });
-        }
-
-        res.status(200).json({ success: true, message: "Produit supprimé", data: {} });
-    } catch (error) {
-        console.error('❌ Erreur suppression produit:', error);
-        res.status(500).json({ success: false, message: error.message || 'Erreur lors de la suppression du produit' });
-    }
+        res.status(200).json({ success: true, message: "Produit supprimé", data: {} });
+    } catch (error) {
+        console.error('❌ Erreur suppression produit:', error);
+        res.status(500).json({ success: false, message: error.message || 'Erreur lors de la suppression du produit' });
+    }
 };
 
 
 // ---------------------------------------------------
-// EXPORTATION
+// EXPORTATION FINALE
 // ---------------------------------------------------
 module.exports = { 
-    getProducts, 
-    getProduct, 
-    getFeaturedProducts,
-    getBestSellers,
+    getProducts, 
+    getProduct, 
+    getFeaturedProducts,
+    getBestSellers,
 
-    // Exportations ADMIN
-    getAdminProducts,
-    createProduct,
-    updateProduct,
-    deleteProduct,
+    // Exportations ADMIN
+    getAdminProducts,
+    createProduct,
+    updateProduct,
+    deleteProduct,
 };
