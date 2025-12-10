@@ -1,130 +1,242 @@
-/* --- AdminDashboard.css --- */
-
-/* Conteneur principal */
+/* --------------------------------------------------- */
+/* 1. Mise en page générale et Header */
+/* --------------------------------------------------- */
 .admin-dashboard {
-    padding: 30px;
-    background-color: #f4f7f9;
+    padding: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f7f9; /* Arrière-plan léger */
     min-height: 100vh;
 }
 
-/* En-tête du Dashboard */
 .dashboard-header {
     margin-bottom: 30px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid #e0e6eb;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #e0e0e0;
 }
 
 .dashboard-header h1 {
-    font-size: 2.2rem;
-    color: #34495e;
+    color: #2c3e50;
+    font-size: 2.2em;
     margin-bottom: 5px;
 }
 
-.dashboard-header p {
-    color: #7f8c8d;
-    font-size: 1rem;
+.critical-error-message {
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    color: #880000;
+    background-color: #ffebeb;
+    border: 1px solid #f00;
+    font-weight: bold;
+    text-align: center;
 }
 
-/* Grille des statistiques */
+/* --------------------------------------------------- */
+/* 2. Cartes de Statistiques (StatCard) */
+/* --------------------------------------------------- */
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
     margin-bottom: 40px;
 }
 
-/* Carte de statistique */
 .stat-card {
-    background: #ffffff;
+    background: white;
+    padding: 20px;
     border-radius: 12px;
-    padding: 25px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
     display: flex;
     align-items: center;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     transition: transform 0.2s, box-shadow 0.2s;
-    border-left: 5px solid transparent;
 }
 
 .stat-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.1);
 }
 
-/* Icône de la carte */
 .card-icon {
-    font-size: 2.5rem;
-    padding: 15px;
+    font-size: 2.5em;
+    margin-right: 15px;
+    padding: 10px;
     border-radius: 50%;
-    margin-right: 20px;
-    line-height: 1;
 }
 
-/* Couleurs spécifiques aux cartes */
-.stat-users { border-left-color: #3498db; }
-.stat-users .card-icon { background-color: #eaf4fd; color: #3498db; }
+.stat-users .card-icon { color: #3498db; background-color: #eaf6ff; }
+.stat-products .card-icon { color: #2ecc71; background-color: #eafff5; }
+.stat-orders .card-icon { color: #f39c12; background-color: #fff9e6; }
+.stat-revenue .card-icon { color: #e74c3c; background-color: #ffeaea; }
 
-.stat-products { border-left-color: #2ecc71; }
-.stat-products .card-icon { background-color: #e5f6eb; color: #2ecc71; }
-
-.stat-orders { border-left-color: #f39c12; }
-.stat-orders .card-icon { background-color: #fff9e6; color: #f39c12; }
-
-
-/* Contenu de la carte */
 .card-content h3 {
-    margin-top: 0;
-    font-size: 1.1rem;
-    color: #2c3e50;
-    font-weight: 600;
+    margin: 0 0 5px 0;
+    font-size: 0.9em;
+    color: #7f8c8d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .stat-value {
-    font-size: 2.5rem;
+    font-size: 1.9em;
     font-weight: 700;
-    color: #34495e;
-    margin: 5px 0;
-    line-height: 1;
-}
-
-.stat-detail {
-    font-size: 0.8rem;
-    color: #95a5a6;
-    display: block;
-}
-
-/* Zone des graphiques */
-.charts-area {
-    background: #ffffff;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-
-.charts-area h2 {
     color: #2c3e50;
-    margin-top: 0;
-    border-bottom: 1px solid #ecf0f1;
-    padding-bottom: 10px;
-    font-size: 1.5rem;
 }
 
-.placeholder {
-    color: #95a5a6;
+
+/* --------------------------------------------------- */
+/* 3. Tableau des Commandes (OrdersTable) */
+/* --------------------------------------------------- */
+.latest-orders-section {
+    background: white;
     padding: 20px;
-    text-align: center;
-    border: 1px dashed #ecf0f1;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.latest-orders-section h2 {
+    color: #444;
+    margin-top: 0;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.orders-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.orders-table th, .orders-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+.orders-table th {
+    background-color: #f7f9fb;
+    color: #555;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.9em;
+}
+
+.orders-table tbody tr:hover {
+    background-color: #fcfcfc;
+}
+
+/* Styles pour les menus déroulants de statut */
+.status-select {
+    padding: 5px 8px;
+    border-radius: 6px;
+    font-weight: bold;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    appearance: none; 
+    background-color: #f7f7f7;
+    transition: all 0.2s;
+}
+
+/* Couleurs spécifiques (améliorées pour le contraste) */
+.status-select.status-pending { background-color: #fff8e1; color: #a87900; border-color: #ffda6a; }
+.status-select.status-shipped { background-color: #e5f6ff; color: #005f99; border-color: #b3e0ff; }
+.status-select.status-delivered { background-color: #e6ffed; color: #006622; border-color: #a8d7a8; }
+.status-select.status-cancelled { background-color: #ffeded; color: #993333; border-color: #ffb3b3; }
+
+/* 🔴 État de mise à jour (Rollback/UX) */
+.status-select.status-updating {
+    background-color: #e0e0e0;
+    color: #888;
+    border: 1px dashed #a0a0a0;
+    pointer-events: none;
+    cursor: wait;
+    opacity: 0.8;
+}
+
+/* --------------------------------------------------- */
+/* 4. Filtres et Pagination */
+/* --------------------------------------------------- */
+
+.orders-controls {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 15px;
+    background-color: #f7f9fb;
+    padding: 15px;
     border-radius: 8px;
 }
 
-/* Styles pour le chargement */
+.filter-select {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #bdc3c7;
+    font-size: 1em;
+    min-width: 200px;
+}
+
+.pagination-controls {
+    display: flex;
+    justify-content: flex-end; 
+    align-items: center;
+    padding-top: 15px;
+    border-top: 1px solid #ecf0f1;
+    margin-top: 15px;
+}
+
+.pagination-controls .page-info {
+    margin: 0 15px;
+    font-weight: 600;
+    color: #555;
+    font-size: 0.95em;
+}
+
+.pagination-button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: background-color 0.2s;
+    font-size: 0.9em;
+}
+
+.pagination-button:hover:not(:disabled) {
+    background-color: #2980b9;
+}
+
+.pagination-button:disabled {
+    background-color: #ecf0f1;
+    color: #bdc3c7;
+    cursor: not-allowed;
+}
+
+
+/* --------------------------------------------------- */
+/* 5. Chargement (Loading) */
+/* --------------------------------------------------- */
 .loading-spinner {
-    text-align: center;
-    padding: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 60vh; 
     color: #3498db;
+    font-size: 1.3em;
 }
 
 .spinner-icon {
-    font-size: 3rem;
+    font-size: 3em;
+    margin-bottom: 15px;
+}
+
+/* Animation de rotation pour le spinner */
+.pulse {
     animation: spin 1.5s linear infinite;
 }
 
@@ -133,174 +245,61 @@
     100% { transform: rotate(360deg); }
 }
 
-.error-message {
-    padding: 20px;
-    background-color: #fcebeb;
-    color: #e74c3c;
-    border-left: 5px solid #e74c3c;
-    margin: 20px;
-    border-radius: 4px;
-}
 
-/* --- AdminDashboard.css (Ajouter à la suite des styles existants) --- */
-
-/* --- Section des Commandes --- */
-
-.latest-orders-section h2 {
-    font-size: 1.5rem;
-    color: #34495e;
-    margin-bottom: 20px;
-}
-
-.latest-orders-section svg {
-    margin-right: 10px;
-    color: #3498db;
-}
-
-/* Style du Tableau */
-.orders-table {
-    width: 100%;
-    border-collapse: collapse;
-    background-color: #ffffff;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    border-radius: 8px;
-    overflow: hidden; /* Pour que border-radius fonctionne avec les coins */
-}
-
-.orders-table thead {
-    background-color: #f4f7f9;
-    color: #2c3e50;
-    font-weight: 600;
-    text-align: left;
-}
-
-.orders-table th, .orders-table td {
-    padding: 15px;
-    border-bottom: 1px solid #e0e6eb;
-}
-
-.orders-table tbody tr:hover {
-    background-color: #f9fbfd;
-}
-
-/* Badge de statut */
-.status-badge {
-    padding: 5px 10px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 700;
-    text-transform: uppercase;
-}
-
-.status-pending {
-    background-color: #fef0cd;
-    color: #f39c12;
-}
-
-.status-shipped {
-    background-color: #d8f5e7;
-    color: #2ecc71;
-}
-
-.status-delivered {
-    background-color: #eaf4fd;
-    color: #3498db;
-}
-
-.status-cancelled {
-    background-color: #fbe0e0;
-    color: #e74c3c;
-}
-
-/* Cache les labels de colonnes pour les petits écrans (préparation responsive) */
+/* --------------------------------------------------- */
+/* 6. Responsive design (Mobile) */
+/* --------------------------------------------------- */
 @media (max-width: 768px) {
+    .admin-dashboard {
+        padding: 10px;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr; /* Une colonne sur mobile */
+    }
+
+    .orders-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .filter-select {
+        width: 100%;
+    }
+
+    /* Rendre le tableau "responsive" (méthode de la carte) */
     .orders-table thead {
         display: none;
     }
-    .orders-table, .orders-table tbody, .orders-table tr, .orders-table td {
-        display: block;
-        width: 100%;
-    }
+
     .orders-table tr {
         margin-bottom: 15px;
-        border: 1px solid #e0e6eb;
+        border: 1px solid #ccc;
         border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
     }
+    
     .orders-table td {
         text-align: right;
         padding-left: 50%;
         position: relative;
+        border: none;
+        border-bottom: 1px dashed #eee;
     }
-    .orders-table td:before {
+
+    .orders-table td::before {
         content: attr(data-label);
         position: absolute;
-        left: 15px;
-        width: 50%;
+        left: 10px;
+        width: 45%;
         padding-right: 10px;
         white-space: nowrap;
-        font-weight: 600;
-        color: #7f8c8d;
+        font-weight: bold;
+        color: #444;
+        text-align: left;
     }
-}
 
-/* --- Styles pour le menu déroulant de Statut --- */
-
-/* Style général du menu déroulant de statut */
-.status-select {
-    padding: 6px 10px;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    border: 1px solid transparent;
-    cursor: pointer;
-    appearance: none; /* Cache les flèches par défaut */
-    /* Ajout d'une flèche personnalisée pour l'esthétique */
-    background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
-    background-repeat: no-repeat;
-    background-position-x: 95%;
-    background-position-y: center;
-    padding-right: 25px; 
-}
-
-/* Couleurs des différents statuts */
-.status-select.status-pending {
-    background-color: #fef0cd;
-    color: #f39c12;
-    border-color: #f39c12;
-}
-
-.status-select.status-shipped {
-    background-color: #d8f5e7;
-    color: #2ecc71;
-    border-color: #2ecc71;
-}
-
-.status-select.status-delivered {
-    background-color: #eaf4fd;
-    color: #3498db;
-    border-color: #3498db;
-}
-
-.status-select.status-cancelled {
-    background-color: #fbe0e0;
-    color: #e74c3c;
-    border-color: #e74c3c;
-}
-
-/* Assurez-vous que les options dans le select ont un fond blanc pour la lisibilité */
-.status-select option {
-    background: white; 
-    color: black;
-}
-
-/* --- Style d'erreur pour le dashboard --- */
-.error-message {
-    padding: 15px;
-    background-color: #fbe0e0;
-    color: #e74c3c;
-    border: 1px solid #e74c3c;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    font-weight: 700;
+    .pagination-controls {
+        justify-content: space-between; 
+    }
 }
