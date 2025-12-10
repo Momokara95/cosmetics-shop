@@ -41,7 +41,7 @@ const getStats = async (req, res, next) => {
                 users: usersCount,
                 products: productsCount,
                 orders: ordersCount,
-                revenue: totalRevenue // 🌟 NOUVEAU
+                revenue: totalRevenue
             }
         });
     } catch (error) {
@@ -72,7 +72,7 @@ const getOrders = async (req, res, next) => {
             // 🛡️ S'assurer que le statut est valide avant de filtrer
             if (!VALID_STATUSES.includes(statusFilter)) {
                  return res.status(400).json({ 
-                    message: `Statut de filtre non valide: ${statusFilter}.` 
+                    message: `Statut de filtre non valide: ${statusFilter}. Statuts autorisés : ${VALID_STATUSES.join(', ')}` 
                 });
             }
             queryFilter.status = statusFilter;
@@ -120,29 +120,51 @@ const getOrders = async (req, res, next) => {
     }
 };
 
+/**
+ * @desc    Mettre à jour le statut d'une commande
+ * @route   PUT /api/admin/orders/:id/status
+ * @access  Private/Admin
+ */
+const updateOrderStatus = async (req, res, next) => {
+    try {
+        const orderId = req.params.id;
+        const { status } = req.body; 
 
-// 🗑️ Suppression de getLatestOrders, car getOrders est plus complet.
-// Mais pour assurer la compatibilité avec le code initial, nous le conservons
-// ou nous le mettons à jour pour appeler la nouvelle fonction.
-const getLatestOrders = async (req, res, next) => {
-    // Appel à getOrders avec les paramètres par défaut
-    req.query.page = 1;
-    req.query.limit = 10;
-    req.query.status = 'All'; 
-    return getOrders(req, res, next);
+        if (!status) {
+            return res.status(400).json({ message: "Le statut de la commande est requis." });
+        }
+        
+        // 🛡️ Vérification de la validité du statut
+        if (!VALID_STATUSES.includes(status)) {
+            return res.status(400).json({
+                message: `Statut non valide: ${status}. Statuts autorisés : ${VALID_STATUSES.join(', ')}`
+            });
+        }
+
+        const order = await Order.findById(orderId);
+
+        if (!order) {
+            return res.status(404).json({ message: "Commande non trouvée." });
+        }
+
+        order.status = status;
+        await order.save();
+
+        res.status(200).json({
+            message: `Statut de la commande ${orderId} mis à jour à : ${status}`,
+            data: order 
+        });
+
+    } catch (error) {
+        next(error);
+    }
 };
 
-// ... (updateOrderStatus reste inchangé, mais on ajoute 'getOrders' à l'export)
-
 // ---------------------------------------------------
-// Exportation
+// EXPORTATION (Toutes les fonctions sont maintenant définies au-dessus)
 // ---------------------------------------------------
 module.exports = { 
     getStats, 
-    getOrders, // 🌟 NOUVEAU
-    updateOrderStatus 
+    getOrders, 
+    updateOrderStatus // ✅ CORRIGÉ: updateOrderStatus est maintenant défini juste au-dessus.
 };
-
-// Note: J'ai retiré 'getLatestOrders' de l'exportation pour n'avoir que 'getOrders', 
-// mais j'ai inclus la fonction ci-dessus si vous devez la conserver pour la compatibilité.
-// L'important est d'utiliser 'getOrders' dans server.js pour la route /api/admin/orders
