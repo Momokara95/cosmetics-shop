@@ -10,11 +10,11 @@ require('dotenv').config();
 const errorHandler = require('./middleware/errorHandler');
 const { protect, admin } = require('./middleware/auth'); 
 const authRoutes = require('./routes/authRoutes');
-const productRoutes = require('./routes/productRoutes'); // ✅ CORRECTION DE L'ERREUR D'IMPORT
+const productRoutes = require('./routes/productRoutes'); // ✅ CORRIGÉ
 const orderRoutes = require('./routes/orderRoutes');
 const uploadRoutes = require('./routes/uploadRoutes'); 
 
-// 🚨 NOUVEL IMPORT de getOrders (doit être créé dans adminController.js)
+// 🚨 Importations du contrôleur Admin (mise à jour)
 const { getStats, updateOrderStatus, getOrders } = require('./controllers/adminController'); 
 
 const app = express();
@@ -53,6 +53,8 @@ app.use(
     windowMs: 15 * 60 * 1000,
     max: 100,
     message: 'Trop de requêtes, réessayez dans 15 minutes',
+    // 🌟 CORRECTION CORS : Permet aux requêtes OPTIONS (Preflight) de passer
+    skip: (req) => req.method === 'OPTIONS', 
   })
 );
 
@@ -67,13 +69,10 @@ app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/upload', uploadRoutes); 
 
-// ROUTES ADMIN (Utilisation de la nouvelle route paginée)
+// ROUTES ADMIN (Utilisation des routes mises à jour)
 app.get('/api/admin/stats', protect, admin, getStats); 
 app.put('/api/admin/orders/:id/status', protect, admin, updateOrderStatus); 
-
-// 🚨 NOUVELLE ROUTE POUR LA PAGINATION ET LE FILTRAGE (Corrige 404)
-app.get('/api/admin/orders', protect, admin, getOrders); 
-// Note: J'ai retiré getLatestOrders des imports car 'getOrders' la remplace.
+app.get('/api/admin/orders', protect, admin, getOrders); // 🚨 ROUTE PAGINÉE (Corrige 404)
 
 app.get('/api', (req, res) => {
   res.json({
@@ -104,7 +103,7 @@ const connectDB = async () => {
 // SERVEUR
 // ---------------------------------------------------
 const PORT = process.env.PORT || 5000;
-let server; // Déclaration pour être accessible par gracefulShutdown
+let server; 
 
 connectDB().then(() => {
     server = app.listen(PORT, '0.0.0.0', () => {
@@ -124,14 +123,12 @@ connectDB().then(() => {
 const gracefulShutdown = (signal) => {
     console.log(`\n🚦 Signal ${signal} reçu. Arrêt propre du serveur...`);
     
-    // Arrêter le serveur HTTP
     server.close(async (err) => {
         if (err) {
             console.error('❌ Erreur lors de l\'arrêt du serveur HTTP:', err);
             process.exit(1);
         }
         
-        // Arrêter la connexion MongoDB
         await mongoose.disconnect();
         console.log('✅ Connexion MongoDB déconnectée.');
 
@@ -143,10 +140,8 @@ const gracefulShutdown = (signal) => {
 process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
-// Garder la gestion des erreurs non gérées
 process.on('unhandledRejection', (err) => {
     console.error('❌ Erreur non gérée:', err.message);
-    // Fermer le serveur si possible avant de quitter
     if (server) server.close(() => process.exit(1)); 
     else process.exit(1);
 });
