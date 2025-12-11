@@ -1,0 +1,369 @@
+/* ========================================================= */
+/* Conteneur principal et mise en page générale */
+/* ========================================================= */
+
+.admin-product-management {
+    padding: 20px;
+    background-color: #f4f7f9;
+    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.product-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 15px;
+}
+
+.product-header h1 {
+    font-size: 1.8rem;
+    color: #333;
+    font-weight: 600;
+}
+
+.product-header h1 svg {
+    margin-right: 10px;
+    color: #007bff; /* Couleur de la marque */
+}
+
+/* Bouton d'ajout */
+.btn-primary.create-btn {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-primary.create-btn:hover {
+    background-color: #218838;
+}
+
+/* ========================================================= */
+/* Contrôles (Recherche et Filtre) */
+/* ========================================================= */
+
+.product-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.search-form {
+    display: flex;
+    flex-grow: 1;
+    max-width: 400px;
+    margin-right: 20px;
+}
+
+.search-input {
+    flex-grow: 1;
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px 0 0 5px;
+    font-size: 1rem;
+}
+
+.btn-search {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 0 5px 5px 0;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-search:hover {
+    background-color: #0056b3;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.filter-group label {
+    font-weight: 600;
+    color: #555;
+}
+
+.filter-select {
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+    background-color: #fff;
+    cursor: pointer;
+}
+
+/* ========================================================= */
+/* Tableau des Produits */
+/* ========================================================= */
+
+.product-list-container {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+}
+
+.products-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.products-table thead th {
+    background-color: #e9ecef;
+    color: #333;
+    font-weight: 700;
+    text-align: left;
+    padding: 15px;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.products-table tbody tr {
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.2s;
+}
+
+.products-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.products-table td {
+    padding: 15px;
+    color: #495057;
+    vertical-align: middle;
+}
+
+/* Ligne des produits désactivés (isDeleted: true) */
+.deleted-row {
+    background-color: #fff3f3;
+    opacity: 0.7;
+}
+
+.deleted-row td {
+    color: #888;
+}
+
+/* Statut et Stock */
+
+.status-badge {
+    padding: 5px 10px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.status-active {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-disabled {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.low-stock {
+    font-weight: 700;
+    color: #dc3545; /* Rouge pour stock faible */
+}
+
+/* Colonne des actions */
+.action-cell {
+    white-space: nowrap;
+    text-align: center;
+}
+
+.btn-action {
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin: 0 5px;
+    padding: 8px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+    font-size: 1.1rem;
+}
+
+.btn-edit {
+    color: #007bff;
+}
+
+.btn-delete {
+    color: #dc3545;
+}
+
+.btn-activate {
+    color: #28a745;
+}
+
+.btn-action:hover {
+    background-color: #eee;
+}
+
+/* ========================================================= */
+/* Pagination */
+/* ========================================================= */
+
+.pagination-controls {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 20px;
+    gap: 15px;
+}
+
+.pagination-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.pagination-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.pagination-button:hover:not(:disabled) {
+    background-color: #0056b3;
+}
+
+.page-info {
+    font-size: 1rem;
+    color: #555;
+}
+
+/* ========================================================= */
+/* Messages d'état (Erreurs et chargement) */
+/* ========================================================= */
+
+.critical-error-message {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.loading-spinner {
+    text-align: center;
+    padding: 50px;
+}
+
+.spinner-icon {
+    font-size: 2rem;
+    color: #007bff;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.placeholder {
+    text-align: center;
+    padding: 40px 0;
+    font-style: italic;
+    color: #777;
+    font-size: 1.1rem;
+}
+
+/* ========================================================= */
+/* Responsive */
+/* ========================================================= */
+
+@media (max-width: 992px) {
+    .product-controls {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    .search-form {
+        width: 100%;
+        max-width: none;
+        margin-right: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .product-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .product-header h1 {
+        margin-bottom: 10px;
+    }
+    .products-table thead {
+        /* Masquer l'en-tête du tableau sur mobile */
+        display: none;
+    }
+    .products-table, .products-table tbody, .products-table tr, .products-table td {
+        display: block;
+        width: 100%;
+    }
+    .products-table tr {
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+    }
+    .products-table td {
+        text-align: right;
+        padding-left: 50%;
+        position: relative;
+    }
+    .products-table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 10px;
+        width: 45%;
+        padding-right: 10px;
+        white-space: nowrap;
+        text-align: left;
+        font-weight: bold;
+        color: #333;
+    }
+    /* Attribution des labels (nécessite d'ajouter data-label dans le JSX) */
+    .products-table tr td:nth-child(1)::before { content: "ID"; }
+    .products-table tr td:nth-child(2)::before { content: "Nom"; }
+    .products-table tr td:nth-child(3)::before { content: "Prix"; }
+    .products-table tr td:nth-child(4)::before { content: "Stock"; }
+    .products-table tr td:nth-child(5)::before { content: "Catégorie"; }
+    .products-table tr td:nth-child(6)::before { content: "Statut"; }
+    .products-table tr td:nth-child(7)::before { content: "Actions"; }
+    
+    .action-cell {
+        justify-content: flex-end;
+        display: flex;
+    }
+}

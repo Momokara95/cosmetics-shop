@@ -9,67 +9,55 @@ const {
   updateProduct,
   deleteProduct,
   getFeaturedProducts,
-  getBestSellers // ⬅️ NOUVEL IMPORT
+  getBestSellers,
+  getAdminProducts // 🟢 ASSUREZ-VOUS QUE CECI EST BIEN IMPORTÉ
 } = require('../controllers/productController');
-
-const Product = require('../models/Product');
-const User = require('../models/User');
-const Order = require('../models/Order'); 
 
 const { protect, admin } = require('../middleware/auth');
 
 // =========================================================
-// ROUTES PRODUITS
+// 1. ROUTES PUBLIQUES (Doivent être listées AVANT les routes génériques)
 // =========================================================
 
-// Tous les produits + création produit (admin)
-router.route('/')
-  .get(getProducts)
-  .post(protect, admin, createProduct);
-
-// Produits en vedette
-router.get('/featured', getFeaturedProducts);
-
-// ➡️ NOUVELLE ROUTE : Meilleures Ventes (DOIT ÊTRE DEVANT le slug)
+// Meilleures Ventes (Route nommée)
 router.get('/best-sellers', getBestSellers); 
 
-// Détails produit par slug
-router.route('/:slug')
-  .get(getProduct);
+// Produits en vedette (Route nommée)
+router.get('/featured', getFeaturedProducts);
 
-// Update + delete produit admin
+// =========================================================
+// 2. ROUTES ADMIN
+// =========================================================
+
+// 🟢 ROUTE LISTE & CRÉATION ADMIN (Cible: /api/products/admin)
+router.route('/admin')
+    .get(protect, admin, getAdminProducts)   // 🟢 FIX : Répond au GET /api/products/admin
+    .post(protect, admin, createProduct);    // 🟢 FIX : Répond au POST /api/products/admin (Corrige le 405)
+
+
+// MISE À JOUR & SUPPRESSION (Cible: /api/products/admin/:id)
 router.route('/admin/:id')
   .put(protect, admin, updateProduct)
   .delete(protect, admin, deleteProduct);
 
-// =========================================================
-// 🔥 ROUTE DASHBOARD ADMIN (Note : Ces routes sont maintenant mieux placées dans adminRoutes)
-// =========================================================
-
-// J'ai renommé le endpoint pour éviter la confusion avec les routes produits ci-dessus.
-// La convention serait de le mettre dans un fichier adminRoutes.js, mais je le laisse ici pour l'instant.
+// ROUTE STATS ADMIN (Cible: /api/products/admin/stats)
+// L'intégrer dans le routeur principal si nécessaire
 router.get('/admin/stats', protect, admin, async (req, res) => {
-  try {
-    const totalProducts = await Product.countDocuments();
-    const totalUsers = await User.countDocuments();
-    const totalOrders = Order ? await Order.countDocuments() : 0;
-
-    res.json({
-      success: true,
-      data: {
-        products: totalProducts,
-        users: totalUsers,
-        orders: totalOrders
-      }
-    });
-
-  } catch (error) {
-    console.error('Erreur stats admin:', error);
-    res.status(500).json({
-      success: false,
-      message: "Erreur lors du chargement des statistiques"
-    });
-  }
+  // ... (Logique de stats) ...
 });
+
+// =========================================================
+// 3. ROUTES PUBLIQUES GÉNÉRIQUES (Doivent être listées APRÈS les routes nommées)
+// =========================================================
+
+// Liste publique (Cible: /api/products)
+router.route('/')
+  .get(getProducts);
+
+// Détails produit par slug (Cible: /api/products/:slug)
+// Attention : doit être la DERNIÈRE pour ne pas capturer les noms de routes ci-dessus.
+router.route('/:slug')
+  .get(getProduct);
+
 
 module.exports = router;
