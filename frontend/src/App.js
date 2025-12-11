@@ -14,6 +14,8 @@ import Checkout from "./pages/Checkout";
 
 import AddProduct from "./pages/admin/AddProduct";
 import AdminDashboard from "./pages/AdminDashboard";
+// 🟢 CORRECTION 1 : Importez le composant de gestion des produits
+import ProductManagement from "./pages/admin/ProductManagement"; 
 
 import ProtectedAdminRoute from "./components/ProtectedAdminRoute";
 
@@ -52,6 +54,16 @@ function App() {
                     }
                   />
 
+                  {/* 🟢 CORRECTION 2 : Ajoutez la route manquante pour la gestion des produits */}
+                  <Route
+                    path="/admin/products"
+                    element={
+                      <ProtectedAdminRoute>
+                        <ProductManagement /> 
+                      </ProtectedAdminRoute>
+                    }
+                  />
+
                   <Route
                     path="/admin/add-product"
                     element={
@@ -60,6 +72,7 @@ function App() {
                       </ProtectedAdminRoute>
                     }
                   />
+                  {/* Note: Il vous faudra probablement aussi une route pour l'édition : /admin/product/:id/edit */}
                 </Routes>
               </main>
 
