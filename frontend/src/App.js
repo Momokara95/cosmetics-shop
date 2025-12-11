@@ -12,10 +12,10 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Checkout from "./pages/Checkout";
 
+// Composants Admin
+import ProductManagement from "./pages/admin/ProductManagement"; // ✅ Nouveau
 import AddProduct from "./pages/admin/AddProduct";
 import AdminDashboard from "./pages/AdminDashboard";
-// 🟢 CORRECTION 1 : Importez le composant de gestion des produits
-import ProductManagement from "./pages/admin/ProductManagement"; 
 
 import ProtectedAdminRoute from "./components/ProtectedAdminRoute";
 
@@ -25,6 +25,7 @@ import Footer from "./components/Footer";
 import "./App.css";
 
 function App() {
+  // Note: Le routage est maintenant configuré pour supporter le monorepo Vercel.
   return (
     <HelmetProvider>
       <AuthProvider>
@@ -35,7 +36,7 @@ function App() {
 
               <main className="main-content">
                 <Routes>
-                  {/* Public */}
+                  {/* ======================= Routes Publiques ======================= */}
                   <Route path="/" element={<Home />} />
                   <Route path="/products" element={<Products />} />
                   <Route path="/products/:slug" element={<ProductDetail />} />
@@ -44,7 +45,9 @@ function App() {
                   <Route path="/register" element={<Register />} />
                   <Route path="/checkout" element={<Checkout />} />
 
-                  {/* Admin */}
+                  {/* ======================= Routes Administrateur ======================= */}
+                  
+                  {/* Dashboard principal de l'administration */}
                   <Route
                     path="/admin/dashboard"
                     element={
@@ -54,7 +57,7 @@ function App() {
                     }
                   />
 
-                  {/* 🟢 CORRECTION 2 : Ajoutez la route manquante pour la gestion des produits */}
+                  {/* 🟢 ROUTE CRUCIALE AJOUTÉE : Gestion complète des produits */}
                   <Route
                     path="/admin/products"
                     element={
@@ -64,6 +67,7 @@ function App() {
                     }
                   />
 
+                  {/* Route d'ajout de produit (si c'est une page séparée) */}
                   <Route
                     path="/admin/add-product"
                     element={
@@ -72,10 +76,27 @@ function App() {
                       </ProtectedAdminRoute>
                     }
                   />
-                  {/* Note: Il vous faudra probablement aussi une route pour l'édition : /admin/product/:id/edit */}
+                  
+                  {/* Route d'édition spécifique par ID (pour l'édition détaillée) */}
+                  <Route
+                    path="/admin/products/:id/edit"
+                    element={
+                      <ProtectedAdminRoute>
+                        {/* Ici, vous pouvez soit réutiliser ProductManagement si l'édition est modale,
+                          soit créer une page spécifique si l'édition prend toute la page.
+                          Pour l'instant, nous utiliserons AddProduct comme placeholder ou créerons ProductEditPage.
+                        */}
+                        <AddProduct /> 
+                      </ProtectedAdminRoute>
+                    }
+                  />
+
+                  {/* Route Catch-all pour les pages non trouvées */}
+                  <Route path="*" element={<Home />} /> 
+
                 </Routes>
               </main>
-                    // Note: Le routage est maintenant configuré pour supporter le monorepo Vercel.
+
               <Footer />
             </div>
           </Router>
