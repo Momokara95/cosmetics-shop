@@ -1,0 +1,30 @@
+// vercel.json (À placer à la racine de votre dépôt)
+{
+    "builds": [
+        // 1. Configuration pour le Frontend (React)
+        {
+            "src": "frontend/package.json",
+            "use": "@vercel/static-build",
+            "config": {
+                "distDir": "frontend/build" 
+            }
+        },
+        // 2. Configuration pour le Backend (Node.js/Express)
+        {
+            "src": "backend/server.js",
+            "use": "@vercel/node"
+        }
+    ],
+    "routes": [
+        // 3. Redirige toutes les requêtes /api vers le backend
+        {
+            "src": "/api/(.*)",
+            "dest": "backend/server.js"
+        },
+        // 4. Sert le contenu statique du frontend (le reste)
+        {
+            "src": "/(.*)",
+            "dest": "frontend/build/$1"
+        }
+    ]
+}
