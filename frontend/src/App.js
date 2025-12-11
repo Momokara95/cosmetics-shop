@@ -75,7 +75,7 @@ function App() {
                   {/* Note: Il vous faudra probablement aussi une route pour l'édition : /admin/product/:id/edit */}
                 </Routes>
               </main>
-
+                    // Note: Le routage est maintenant configuré pour supporter le monorepo Vercel.
               <Footer />
             </div>
           </Router>
